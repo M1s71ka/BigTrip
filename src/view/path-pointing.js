@@ -1,11 +1,17 @@
 import { createElement } from '../render.js';
+import { changeDateFormatToMinutes, changeDateFormatToMonth } from '../utils.js';
 
 const createPathPoint = (point) => {
-  const {type, base_price, destination} = point;
+  const {type, basePrice, destination, dateFrom, dateTo} = point;
+
+  const getDate = () => {
+	return (dateFrom) ? changeDateFormatToMonth(dateFrom) : '';
+  } 
+
   return(
   `<li class="trip-events__item">
 	<div class="event">
-	  <time class="event__date" datetime="2019-03-18">MAR 18</time>
+	  <time class="event__date" datetime="2019-03-18">${getDate()}</time>
 	  <div class="event__type">
 		<img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
 	  </div>
@@ -19,7 +25,7 @@ const createPathPoint = (point) => {
 		<p class="event__duration">30M</p>
 	  </div>
 	  <p class="event__price">
-		&euro;&nbsp;<span class="event__price-value">${base_price}</span>
+		&euro;&nbsp;<span class="event__price-value">${basePrice}</span>
 	  </p>
 	  <h4 class="visually-hidden">Offers:</h4>
 	  <ul class="event__selected-offers">
