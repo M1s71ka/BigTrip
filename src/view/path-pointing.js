@@ -1,17 +1,43 @@
 import { createElement } from '../render.js';
-import { changeDateFormatToMinutes, changeDateFormatToMonth } from '../utils.js';
+import dayjs from 'dayjs';
+import { getMinutesFromDate, getHoursFromDate, changeDateFormatToMonth } from '../utils.js';
+import { createOffers } from '../mock/mocks.js';
+
+const getDatesDifference = (dateFrom, dateTo) => {
+  const departureDay = dayjs(dateFrom);
+  const arrivingDay = dayjs(dateTo);
+  const minutesDifference = getMinutesFromDate(dateTo) - getMinutesFromDate(dateFrom);
+  const hoursDifference = getHoursFromDate(dateTo) - getHoursFromDate(dateFrom);
+  return [arrivingDay.diff(departureDay, 'd'), minutesDifference, hoursDifference];
+};
+
+const getSelectedOffers = (offers) => {
+  const tripOffers = createOffers();
+  let selectedOffersWrapper = '<ul class="event__selected-offers">';
+  for (let i = 0; i < offers.length; i++) {
+    for (let j = 0; j < tripOffers.length; j++) {
+      if (offers[i] === tripOffers[j].id) {
+        selectedOffersWrapper +=
+				`<li class="event__offer">
+					<span class="event__offer-title">${tripOffers[j].title}</span>
+					&plus;&euro;&nbsp;
+					<span class="event__offer-price">${tripOffers[j].price}</span>
+	  			</li>`;
+        break;
+      }
+    }
+  }
+  selectedOffersWrapper += '</ul>';
+  return selectedOffersWrapper;
+};
+
 
 const createPathPoint = (point) => {
-  const {type, basePrice, destination, dateFrom, dateTo} = point;
-
-  const getDate = () => {
-	return (dateFrom) ? changeDateFormatToMonth(dateFrom) : '';
-  } 
-
+  const {type, basePrice, destination, dateFrom, dateTo, offers} = point;
   return(
-  `<li class="trip-events__item">
+    `<li class="trip-events__item">
 	<div class="event">
-	  <time class="event__date" datetime="2019-03-18">${getDate()}</time>
+	  <time class="event__date" datetime="2019-03-18">${changeDateFormatToMonth(dateFrom)}</time>
 	  <div class="event__type">
 		<img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
 	  </div>
@@ -22,19 +48,14 @@ const createPathPoint = (point) => {
 		  &mdash;
 		  <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
 		</p>
-		<p class="event__duration">30M</p>
+		<p class="event__duration">${getDatesDifference(dateFrom,dateTo)[0]}D ${getDatesDifference(dateFrom,dateTo)[1]}H
+		 ${getDatesDifference(dateFrom,dateTo)[2]}M</p>
 	  </div>
 	  <p class="event__price">
 		&euro;&nbsp;<span class="event__price-value">${basePrice}</span>
 	  </p>
 	  <h4 class="visually-hidden">Offers:</h4>
-	  <ul class="event__selected-offers">
-		<li class="event__offer">
-		  <span class="event__offer-title">Order Uber</span>
-		  &plus;&euro;&nbsp;
-		  <span class="event__offer-price">20</span>
-		</li>
-	  </ul>
+	  ${getSelectedOffers(offers)}
 	  <button class="event__favorite-btn event__favorite-btn--active" type="button">
 		<span class="visually-hidden">Add to favorite</span>
 		<svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -45,12 +66,12 @@ const createPathPoint = (point) => {
 		<span class="visually-hidden">Open event</span>
 	  </button>
 	</div>
-  </li>`)
+  </li>`);
 };
 
 export default class PointView {
   constructor(point) {
-	this.point = point;
+    this.point = point;
   }
 
   getTemplate() {

@@ -1,9 +1,11 @@
-import { createPointDescription } from "../mock/mocks.js";
+import { createPointDescription } from '../mock/mocks.js';
 
 export default class TripModel {
-	_points = Array.from({length:3}, createPointDescription);
+  constructor() {
+    this._points = Array.from({length:3}, createPointDescription);
+  }
 
-	get points() {
-		return this._points;
-	}
+  get points() {
+    return this._points;
+  }
 }

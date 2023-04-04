@@ -4,7 +4,4 @@ import TripModel from './model/trip-model.js';
 const markup = new DefaultMarkupPresenter();
 const tripModel = new TripModel();
 
-console.log(tripModel.points)
-
 markup.init(tripModel);
-

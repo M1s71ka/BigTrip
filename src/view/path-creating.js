@@ -1,42 +1,19 @@
 import { createElement } from '../render.js';
-import { createOffers } from '../mock/mocks.js'
+import { getOffers } from '../utils.js';
 
 const getPhotos = (destination) => {
-	let imageWrapper = `<div class="event__photos-tape"> \n`
-	for (let i = 0; i < destination.pictures.length; i++) {
-		imageWrapper += `	<img class="event__photo" src="${destination.pictures[i].src}" alt="${destination.pictures[i].description}"> \n`
-	}
-	imageWrapper += `</div>`
-	return imageWrapper;
-}
-
-const getOffers = (offers) => {
-	const availableOffers = createOffers();
-	let offersWrapper = `<div class="event__available-offers">`
-	for (let i = 0; i < offers.length; i++) {
-		for (let j = 0; j < availableOffers.length; j++) {
-			if (offers[i] === availableOffers[j].id) {
-				offersWrapper += `
-				<div class="event__offer-selector">
-					<input class="event__offer-checkbox  visually-hidden" id="event-offer-${availableOffers[j].title.toLowerCase().split(' ').join('')}-${availableOffers[j].id}"
-					 type="checkbox" name="event-offer-${availableOffers[j].title.toLowerCase().split(' ').join('')}">
-					<label class="event__offer-label" for="event-offer-${availableOffers[j].title.toLowerCase().split(' ').join('')}-${availableOffers[j].id}">
-				  		<span class="event__offer-title">${availableOffers[j].title}</span>
-				  		&plus;&euro;&nbsp;
-				  	<span class="event__offer-price">${availableOffers[j].price}</span>
-					</label>
-				</div>`	
-				break;
-			}
-		}
-	}
-	return offersWrapper += `</div>`;
-}
+  let imageWrapper = '<div class="event__photos-tape"> \n';
+  for (let i = 0; i < destination.pictures.length; i++) {
+    imageWrapper += `	<img class="event__photo" src="${destination.pictures[i].src}" alt="${destination.pictures[i].description}"> \n`;
+  }
+  imageWrapper += '</div>';
+  return imageWrapper;
+};
 
 const createPointMenu = (point) => {
-	const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
-	return (
-		`<form class="event event--edit" action="#" method="post">
+  const { basePrice, destination, offers, type } = point;
+  return (
+    `<form class="event event--edit" action="#" method="post">
 	<header class="event__header">
 	  <div class="event__type-wrapper">
 		<label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -144,15 +121,15 @@ const createPointMenu = (point) => {
 	  </section>
 	</section>
   </form>`
-);
-} 
-  
+  );
+};
+
 
 export default class PathMenuView {
   constructor(point) {
-	this.point = point;
+    this.point = point;
   }
-  
+
   getTemplate() {
     return createPointMenu(this.point);
   }
