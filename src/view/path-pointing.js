@@ -70,18 +70,16 @@ const createPathPoint = (point) => {
 };
 
 export default class PointView {
-  #point = null;
-  #element = null;
   constructor(point) {
-    this.#point = point;
+    this._point = point;
   }
 
   get template() {
-    return createPathPoint(this.#point);
+    return createPathPoint(this._point);
   }
 
   get element() {
-    this.#element = createElement(this.template);
-    return this.#element;
+    this._element = createElement(this.template);
+    return this._element;
   }
 }

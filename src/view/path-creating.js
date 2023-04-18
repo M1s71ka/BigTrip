@@ -126,20 +126,18 @@ const createPointMenu = (point) => {
 
 
 export default class PathMenuView {
-  #point = null;
-  #element = null;
   constructor(point) {
-    this.#point = point;
+    this._point = point;
   }
 
   get template() {
-    return createPointMenu(this.#point);
+    return createPointMenu(this._point);
   }
 
   get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
+    if (!this._element) {
+      this._element = createElement(this.template);
     }
-    return this.#element;
+    return this._element;
   }
 }
