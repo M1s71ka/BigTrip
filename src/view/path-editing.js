@@ -116,17 +116,17 @@ const createEditMenu = (point) => {
 
 export default class EditPointView {
   constructor(point) {
-    this.point = point;
+    this._point = point;
   }
 
-  getTemplate() {
-    return createEditMenu(this.point);
+  get template() {
+    return createEditMenu(this._point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
     }
-    return this.element;
+    return this._element;
   }
 }

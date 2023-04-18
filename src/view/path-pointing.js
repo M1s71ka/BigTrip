@@ -71,15 +71,15 @@ const createPathPoint = (point) => {
 
 export default class PointView {
   constructor(point) {
-    this.point = point;
+    this._point = point;
   }
 
-  getTemplate() {
-    return createPathPoint(this.point);
+  get template() {
+    return createPathPoint(this._point);
   }
 
-  getElement() {
-    this.element = createElement(this.getTemplate());
-    return this.element;
+  get element() {
+    this._element = createElement(this.template);
+    return this._element;
   }
 }
