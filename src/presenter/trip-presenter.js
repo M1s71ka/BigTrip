@@ -2,7 +2,7 @@ import FiltersView from '../view/filters.js';
 import SortingView from '../view/sorting.js';
 import EditPointView from '../view/path-editing.js';
 import PointView from '../view/path-pointing.js';
-import { render } from '../render.js';
+import { createElement, render } from '../render.js';
 
 export default class DefaultMarkupPresenter {
   init(model) {
@@ -14,11 +14,16 @@ export default class DefaultMarkupPresenter {
     this._pointsList = document.createElement('ul');
 
     render(this._filters.element, this._filtersWrapper);
-    render(this._sortingButtons.element, this._tripPointsSection);
-    this._pointsList.classList.add('.trip-events__list');
-    render(this._pointsList, this._tripPointsSection);
-    for (let i = 0; i < 3; i++) {
-      this._renderPathPoint(this._model.points[i]);
+    if (this._model.points.length !== 0) {
+      render(this._sortingButtons.element, this._tripPointsSection);
+      this._pointsList.classList.add('.trip-events__list');
+      render(this._pointsList, this._tripPointsSection);
+      for (let i = 0; i < 3; i++) {
+        this._renderPathPoint(this._model.points[i]);
+      }
+    } else {
+      const message = '<p class="trip-events__msg">Click New Event to create your first point</p>';
+      this._tripPointsSection.append(createElement(message));
     }
   }
 
