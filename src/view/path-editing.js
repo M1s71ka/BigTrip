@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getOffers } from '../utils.js';
 
 const createEditMenu = (point) => {
@@ -114,19 +114,34 @@ const createEditMenu = (point) => {
   );
 };
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   constructor(point) {
+	super();
     this._point = point;
   }
 
   get template() {
     return createEditMenu(this._point);
-  }
+  };
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
+  _setClickHandler = (callback) => {
+	this._callback.rollUp = callback;
+	console.log(this.element);
+	this.element.querySelector('.event__rollup-btn').addEventListener('click', this._rollUpCard);
+  };
+
+  _setSaveButtonHandler = (callback) => {
+	this._callback.saveCard = callback;
+	this.element.querySelector('.event__save-btn').addEventListener('click', this._saveCard);
+  };
+
+  _rollUpCard = (evt) => {
+	evt.preventDefault();
+	this._callback.rollUp();
+  };
+
+  _saveCard = (evt) => {
+	evt.preventDefault();
+	this._callback.saveCard();
   }
 }
