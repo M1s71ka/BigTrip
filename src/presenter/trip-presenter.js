@@ -2,7 +2,7 @@ import FiltersView from '../view/filters.js';
 import SortingView from '../view/sorting.js';
 import EditPointView from '../view/path-editing.js';
 import PointView from '../view/path-pointing.js';
-import { createElement, render } from '../render.js';
+import { createElement, render, replace } from '../framework/render.js';
 
 export default class DefaultMarkupPresenter {
   init(model) {
@@ -11,13 +11,11 @@ export default class DefaultMarkupPresenter {
     this._sortingButtons = new SortingView();
     this._filtersWrapper = document.querySelector('.trip-controls__filters');
     this._tripPointsSection = document.querySelector('.trip-events');
-    this._pointsList = document.createElement('ul');
+    this._pointsList = document.querySelector('.trip-events__list');
 
-    render(this._filters.element, this._filtersWrapper);
+    render(this._filters, this._filtersWrapper);
     if (this._model.points.length !== 0) {
-      render(this._sortingButtons.element, this._tripPointsSection);
-      this._pointsList.classList.add('.trip-events__list');
-      render(this._pointsList, this._tripPointsSection);
+      render(this._sortingButtons, this._tripPointsSection, 'afterbegin');
       for (let i = 0; i < 3; i++) {
         this._renderPathPoint(this._model.points[i]);
       }
@@ -27,44 +25,32 @@ export default class DefaultMarkupPresenter {
     }
   }
 
-  _renderPathPoint (point){
+  _renderPathPoint(point) {
     const pathPoint = new PointView(point);
     const editMenu = new EditPointView(point);
-    const pointElement = pathPoint.element;
-    const editMenuElement = editMenu.element;
-
-    const replaceEditByPoint = () => {
-      this._pointsList.replaceChild(pointElement, editMenuElement);
-    };
-
-    const replacePointByEdit = () => {
-      this._pointsList.replaceChild(editMenuElement, pointElement);
-    };
 
     const onEscKeyDown = (evt) => {
       if (evt.keyCode === 27) {
         evt.preventDefault();
-        replaceEditByPoint();
+        replace(pathPoint, editMenu);
         document.removeEventListener('keydown', onEscKeyDown);
       }
     };
 
-    const swapEditMenuToPoint = (evt) => {
-      evt.preventDefault();
-      replaceEditByPoint();
+    const swapEditMenuToPoint = () => {
+      replace(pathPoint, editMenu);
       document.removeEventListener('keydown', onEscKeyDown);
     };
 
-    const swapPointToEditMenu = (evt) => {
-      evt.preventDefault();
-      replacePointByEdit();
-      editMenuElement.querySelector('.event__save-btn').addEventListener('click', swapEditMenuToPoint);
-      editMenuElement.querySelector('.event__rollup-btn').addEventListener('click', swapEditMenuToPoint);
+    const swapPointToEditMenu = () => {
+      replace(editMenu, pathPoint);
+      editMenu._setClickHandler(swapEditMenuToPoint);
+      editMenu._setSaveButtonHandler(swapEditMenuToPoint);
       document.addEventListener('keydown', onEscKeyDown);
     };
 
-    pointElement.querySelector('.event__rollup-btn').addEventListener('click', swapPointToEditMenu);
+    pathPoint._setClickHandler(swapPointToEditMenu);
 
-    render(pointElement, this._pointsList);
+    render(pathPoint, this._pointsList);
   }
 }

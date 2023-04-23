@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getOffers } from '../utils.js';
 
 const getPhotos = (destination) => {
@@ -125,19 +125,13 @@ const createPointMenu = (point) => {
 };
 
 
-export default class PathMenuView {
+export default class PathMenuView extends AbstractView{
   constructor(point) {
+    super();
     this._point = point;
   }
 
   get template() {
     return createPointMenu(this._point);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
   }
 }

@@ -1,7 +1,7 @@
-import { createElement } from '../render.js';
 import dayjs from 'dayjs';
 import { getMinutesFromDate, getHoursFromDate, changeDateFormatToMonth } from '../utils.js';
 import { createOffers } from '../mock/mocks.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const getDatesDifference = (dateFrom, dateTo) => {
   const departureDay = dayjs(dateFrom);
@@ -69,17 +69,23 @@ const createPathPoint = (point) => {
   </li>`);
 };
 
-export default class PointView {
+export default class PointView extends AbstractView {
   constructor(point) {
+	super();
     this._point = point;
   }
 
   get template() {
     return createPathPoint(this._point);
-  }
+  };
 
-  get element() {
-    this._element = createElement(this.template);
-    return this._element;
+  _setClickHandler = (callback) => {
+	this._callback.expand = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this._expand);
+  };
+
+  _expand = (evt) => {
+	evt.preventDefault();
+	this._callback.expand();
   }
 }
