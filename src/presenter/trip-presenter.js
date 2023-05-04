@@ -7,7 +7,7 @@ import { createElement, render, replace } from '../framework/render.js';
 export default class DefaultMarkupPresenter {
   init(model) {
     this._model = model;
-    this._filters = new FiltersView();
+    this._filters = new FiltersView(this._model.points);
     this._sortingButtons = new SortingView();
     this._filtersWrapper = document.querySelector('.trip-controls__filters');
     this._tripPointsSection = document.querySelector('.trip-events');
