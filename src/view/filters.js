@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createFiltersTemplate = (pointsCount) => {
-	const isDisabled = pointsCount === 0 ? 'disabled': '';
-	return (
-		`<div class="trip-main__trip-controls  trip-controls">
+  const isDisabled = pointsCount === 0 ? 'disabled': '';
+  return (
+    `<div class="trip-main__trip-controls  trip-controls">
 		  <div class="trip-controls__navigation">
 			<h2 class="visually-hidden">Switch trip view</h2>
 			<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -34,13 +34,13 @@ const createFiltersTemplate = (pointsCount) => {
 			</form>
 		  </div>
 		</div>`
-	  );
-}
-  
-export default class FiltersView extends AbstractView{
+  );
+};
+
+export default class FiltersView extends AbstractView {
   constructor(points) {
-	super();
-	this._points = points;
+    super();
+    this._points = points;
   }
 
   get template() {

@@ -126,7 +126,6 @@ export default class EditPointView extends AbstractView {
 
   _setClickHandler = (callback) => {
 	this._callback.rollUp = callback;
-	console.log(this.element);
 	this.element.querySelector('.event__rollup-btn').addEventListener('click', this._rollUpCard);
   };
 

@@ -1,56 +1,74 @@
 import FiltersView from '../view/filters.js';
 import SortingView from '../view/sorting.js';
-import EditPointView from '../view/path-editing.js';
-import PointView from '../view/path-pointing.js';
-import { createElement, render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
+import NoTaskView from '../view/no-task.js';
+import PathPointPresenter from './point-presenter.js';
+import { updatePoint } from '../utils.js';
 
 export default class DefaultMarkupPresenter {
-  init(model) {
-    this._model = model;
-    this._filters = new FiltersView(this._model.points);
-    this._sortingButtons = new SortingView();
-    this._filtersWrapper = document.querySelector('.trip-controls__filters');
-    this._tripPointsSection = document.querySelector('.trip-events');
-    this._pointsList = document.querySelector('.trip-events__list');
+  #model = null;
+  #filters = null;
+  #sortingButtons = null;
+  #noTaskComponent = null;
+  #filtersWrapper = null;
+  #tripPointsSection = null;
+  #pointsList = null;
+  #pointsData = null;
+  #pointPresenter = null;
 
-    render(this._filters, this._filtersWrapper);
-    if (this._model.points.length !== 0) {
-      render(this._sortingButtons, this._tripPointsSection, 'afterbegin');
-      for (let i = 0; i < 3; i++) {
-        this._renderPathPoint(this._model.points[i]);
-      }
+  constructor(model) {
+	this.#model = model;
+  }
+
+  init() {
+	this.#pointsData = [...this.#model.points]
+    this.#filters = new FiltersView(this.#pointsData);
+    this.#sortingButtons = new SortingView();
+	this.#noTaskComponent = new NoTaskView();
+	this.#pointPresenter = new Map();
+    this.#filtersWrapper = document.querySelector('.trip-controls__filters');
+    this.#tripPointsSection = document.querySelector('.trip-events');
+    this.#pointsList = document.querySelector('.trip-events__list');
+
+    this.#renderFiltersComponent();
+    if (this.#pointsData.length !== 0) {
+      this.#renderSortButtonsComponent();
+      this.#renderPathPoints();
     } else {
-      const message = '<p class="trip-events__msg">Click New Event to create your first point</p>';
-      this._tripPointsSection.append(createElement(message));
+		this.#renderNoTasksComponent();
     }
   }
 
-  _renderPathPoint(point) {
-    const pathPoint = new PointView(point);
-    const editMenu = new EditPointView(point);
+  #changeModeHandler = () => {
+	this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  }
 
-    const onEscKeyDown = (evt) => {
-      if (evt.keyCode === 27) {
-        evt.preventDefault();
-        replace(pathPoint, editMenu);
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
+  #pointChangeHandler = (updatedItem) => {
+	this.#pointsData = updatePoint(this.#pointsData, updatedItem);
+	this.#pointPresenter.get(updatedItem.id).init(updatedItem);
+  };
 
-    const swapEditMenuToPoint = () => {
-      replace(pathPoint, editMenu);
-      document.removeEventListener('keydown', onEscKeyDown);
-    };
+  #renderNoTasksComponent = () => {
+	render(this.#noTaskComponent, this.#tripPointsSection);
+  };
 
-    const swapPointToEditMenu = () => {
-      replace(editMenu, pathPoint);
-      editMenu._setClickHandler(swapEditMenuToPoint);
-      editMenu._setSaveButtonHandler(swapEditMenuToPoint);
-      document.addEventListener('keydown', onEscKeyDown);
-    };
+  #renderSortButtonsComponent = () => {
+	render(this.#sortingButtons, this.#tripPointsSection, 'afterbegin');
+  };
 
-    pathPoint._setClickHandler(swapPointToEditMenu);
+  #renderFiltersComponent = () => {
+	render(this.#filters, this.#filtersWrapper);
+  };
 
-    render(pathPoint, this._pointsList);
+  #renderPathPointComponent = (point, pointsList) => {
+    const pathPoint = new PathPointPresenter(pointsList, this.#pointChangeHandler, this.#changeModeHandler);
+	pathPoint.init(point);
+	this.#pointPresenter.set(point.id, pathPoint);
+  }
+
+  #renderPathPoints = () => {
+	for (let i = 0; i < this.#pointsData.length; i++) {
+		this.#renderPathPointComponent(this.#model.points[i], this.#pointsList);
+    }
   }
 }
