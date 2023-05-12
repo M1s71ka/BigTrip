@@ -1,12 +1,13 @@
-import { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, PointPrice, OffersPrice} from './constants.js';
+import { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, PATH_ID, PointPrice, OffersPrice} from './constants.js';
 import { getRandomNumber } from '../utils.js';
 import dayjs from 'dayjs';
 
 const offers = OFFERS.slice();
+let idList = PATH_ID.slice();
 
 const getPointDescription = () => (
   {
-    id: '',
+    id: String(idList[0]),
     description: POINTS_DESCRIPTIONS[getRandomNumber(0, POINTS_DESCRIPTIONS.length - 1)],
     name: DESTINATION_POINTS[getRandomNumber(0, DESTINATION_POINTS.length - 1)],
     pictures: [
@@ -17,6 +18,7 @@ const getPointDescription = () => (
     ]
   }
 );
+
 
 const initRandomDate = () =>  {
   const dayFrom = getRandomNumber(1, 15);
@@ -44,11 +46,12 @@ export const createPointDescription = () => {
     dateFrom: randomDates[0],
     dateTo: randomDates[1],
     destination: getPointDescription(),
-    id: '',
+    id: String(idList[0]),
     isFavorite: false,
     offers: [getRandomNumber(1, offers.length)],
     type: pointType,
   };
+  idList = idList.slice(1);
   return description;
 };
 

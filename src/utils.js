@@ -34,3 +34,17 @@ export const getOffers = (offers) => {
   offersWrapper += '</div>';
   return offersWrapper;
 };
+
+export const updatePoint = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1)
+  ];
+};
