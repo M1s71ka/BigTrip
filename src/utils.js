@@ -1,17 +1,17 @@
 import dayjs from 'dayjs';
 import { createOffers } from './mock/mocks';
 
-export const getRandomNumber = (minimum, maximum) => {
+const getRandomNumber = (minimum, maximum) => {
   minimum = Math.ceil(Math.min(Math.abs(minimum), Math.abs(maximum)));
   maximum = Math.floor(Math.max(Math.abs(minimum), Math.abs(maximum)));
   return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
 };
 
-export const changeDateFormatToMonth = (dueDate) => dayjs(dueDate).format('MMM D');
-export const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
-export const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
+const changeDateFormatToMonth = (dueDate) => dayjs(dueDate).format('MMM D');
+const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
+const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
 
-export const getOffers = (offers) => {
+const getOffers = (offers) => {
   const tripOffers = createOffers();
   let offersWrapper = '<div class="event__available-offers">';
   for (let i = 0; i < offers.length; i++) {
@@ -35,7 +35,7 @@ export const getOffers = (offers) => {
   return offersWrapper;
 };
 
-export const updatePoint = (items, update) => {
+const updatePoint = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 
   if (index === -1) {
@@ -48,3 +48,32 @@ export const updatePoint = (items, update) => {
     ...items.slice(index + 1)
   ];
 };
+
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const sortPointByDateUp = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+  return (weight) ? weight : dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+};
+
+const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
+
+const sortPointsByTime = (pointA, pointB) =>
+//Возможно нужна проверка на null, проверить, когда будет сервер.
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
+export {getRandomNumber, changeDateFormatToMonth, getMinutesFromDate, getHoursFromDate, getOffers, updatePoint, sortPointByDateUp, sortPointsByPrice,
+  sortPointsByTime};
