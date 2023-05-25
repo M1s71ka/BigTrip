@@ -54,6 +54,10 @@ export default class PathPointPresenter {
 		}
 	};
 
+	destroyPathPoint = () => {
+		remove(this.#pathPoint);
+	}
+
 	#onEscKeyDown = (evt) => {
 		if (evt.keyCode === 27) {
 		  evt.preventDefault();

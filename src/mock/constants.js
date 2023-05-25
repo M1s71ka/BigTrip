@@ -15,8 +15,14 @@ const OffersPrice = {
   MAX: 120,
 };
 
+const SortingType = {
+	DATE: "date",
+	TIME: "time",
+	PRICE: "price",
+};
+
 for (let i = 1; i <= 10; i++) {
   PATH_ID.push(i);
 }
 
-export { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, ERROR_MESSAGES, PATH_ID, PointPrice, OffersPrice };
+export { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, ERROR_MESSAGES, PATH_ID, PointPrice, OffersPrice, SortingType };
