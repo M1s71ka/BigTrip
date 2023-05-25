@@ -50,34 +50,30 @@ const updatePoint = (items, update) => {
 };
 
 const getWeightForNullDate = (dateA, dateB) => {
-	if (dateA === null && dateB === null) {
-		return 0;
-	}
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
 
-	if (dateA === null) {
-		return 1;
-	}
+  if (dateA === null) {
+    return 1;
+  }
 
-	if (dateB === null) {
-		return -1;
-	}
+  if (dateB === null) {
+    return -1;
+  }
 
-	return null;
+  return null;
 };
 
 const sortPointByDateUp = (pointA, pointB) => {
-	const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
-	return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+  return (weight) ? weight : dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };
 
-const sortPointsByPrice = (pointA, pointB) => {
-	return pointB.basePrice - pointA.basePrice
-};
+const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
-const sortPointsByTime = (pointA, pointB) => {
-	//Возможно нужна проверка на null, проверить, когда будет сервер.
-	return dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
-};
-
+const sortPointsByTime = (pointA, pointB) =>
+//Возможно нужна проверка на null, проверить, когда будет сервер.
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
 export {getRandomNumber, changeDateFormatToMonth, getMinutesFromDate, getHoursFromDate, getOffers, updatePoint, sortPointByDateUp, sortPointsByPrice,
-sortPointsByTime};
+  sortPointsByTime};

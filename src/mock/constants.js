@@ -16,9 +16,9 @@ const OffersPrice = {
 };
 
 const SortingType = {
-	DATE: "date",
-	TIME: "time",
-	PRICE: "price",
+  DATE: 'date',
+  TIME: 'time',
+  PRICE: 'price',
 };
 
 for (let i = 1; i <= 10; i++) {
