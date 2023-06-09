@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createOffers } from './mock/mocks';
+import { POINTS_DESCRIPTIONS, OffersByType, PhotosByDestination } from './mock/constants';
 
 const getRandomNumber = (minimum, maximum) => {
   minimum = Math.ceil(Math.min(Math.abs(minimum), Math.abs(maximum)));
@@ -11,28 +11,28 @@ const changeDateFormatToMonth = (dueDate) => dayjs(dueDate).format('MMM D');
 const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
 const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
 
-const getOffers = (offers) => {
-  const tripOffers = createOffers();
-  let offersWrapper = '<div class="event__available-offers">';
-  for (let i = 0; i < offers.length; i++) {
-    for (let j = 0; j < tripOffers.length; j++) {
-      if (offers[i] === tripOffers[j].id) {
-        offersWrapper += `
-				<div class="event__offer-selector">
-					<input class="event__offer-checkbox  visually-hidden" id="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}-${tripOffers[j].id}"
-					 type="checkbox" name="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}">
-					<label class="event__offer-label" for="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}-${tripOffers[j].id}">
-				  		<span class="event__offer-title">${tripOffers[j].title}</span>
-				  		&plus;&euro;&nbsp;
-				  	<span class="event__offer-price">${tripOffers[j].price}</span>
-					</label>
-				</div>`;
-        break;
-      }
-    }
+const getOffersByPointType = (type) => {
+  if (type !== 'check-in') {
+    const offersByType = OffersByType[type.split()[0].toUpperCase()];
+    return offersByType;
   }
-  offersWrapper += '</div>';
-  return offersWrapper;
+  return OffersByType.CHECKIN;
+};
+
+const getPhotosByDestination = (name) => {
+  const destinationPhotos = [];
+  const destinationName = name.split(' ').join('').toUpperCase();
+  if (!(destinationName in PhotosByDestination)) {
+    return [];
+  }
+  const photos = PhotosByDestination[destinationName];
+  for (let i = 0; i < photos.length; i++) {
+    destinationPhotos[i] = {
+      src: `http://dummyimage.com/${photos[0]}`,
+      description: POINTS_DESCRIPTIONS[getRandomNumber(0, POINTS_DESCRIPTIONS.length - 1)]
+    };
+  }
+  return destinationPhotos;
 };
 
 const updatePoint = (items, update) => {
@@ -75,5 +75,5 @@ const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePric
 const sortPointsByTime = (pointA, pointB) =>
 //Возможно нужна проверка на null, проверить, когда будет сервер.
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
-export {getRandomNumber, changeDateFormatToMonth, getMinutesFromDate, getHoursFromDate, getOffers, updatePoint, sortPointByDateUp, sortPointsByPrice,
-  sortPointsByTime};
+export {getRandomNumber, changeDateFormatToMonth, getMinutesFromDate, getHoursFromDate, getOffersByPointType, getPhotosByDestination,
+  updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};

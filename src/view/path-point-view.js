@@ -12,21 +12,16 @@ const getDatesDifference = (dateFrom, dateTo) => {
 };
 
 const getSelectedOffers = (offers) => {
-  const tripOffers = createOffers();
+  const tripOffers = createOffers(offers);
   let selectedOffersWrapper = '<ul class="event__selected-offers">';
-  for (let i = 0; i < offers.length; i++) {
-    for (let j = 0; j < tripOffers.length; j++) {
-      if (offers[i] === tripOffers[j].id) {
+    for (let i = 0; i < tripOffers.length; i++) {
         selectedOffersWrapper +=
 				`<li class="event__offer">
-					<span class="event__offer-title">${tripOffers[j].title}</span>
+					<span class="event__offer-title">${tripOffers[i].title}</span>
 					&plus;&euro;&nbsp;
-					<span class="event__offer-price">${tripOffers[j].price}</span>
+					<span class="event__offer-price">${tripOffers[i].price}</span>
 	  			</li>`;
-        break;
       }
-    }
-  }
   selectedOffersWrapper += '</ul>';
   return selectedOffersWrapper;
 };
@@ -70,13 +65,14 @@ const createPathPoint = (point) => {
 };
 
 export default class PointView extends AbstractView {
-  constructor(point) {
-	super();
-    this._point = point;
+  #point = null;
+
+  init(point) {
+	this.#point = point;
   }
 
   get template() {
-    return createPathPoint(this._point);
+    return createPathPoint(this.#point);
   };
 
   _setClickHandler = (callback) => {

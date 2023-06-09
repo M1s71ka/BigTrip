@@ -78,6 +78,7 @@ export default class DefaultMarkupPresenter {
 		return;
 	}
 	this.#sortPoints(sortType);
+	this.#changeModeHandler();
 	this.#clearPointsList();
 	this.#renderPathPoints();
   };
