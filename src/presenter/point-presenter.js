@@ -68,8 +68,7 @@ export default class PathPointPresenter {
 		}
 	};
 
-	#swapEditMenuToPoint = (pointData) => {
-		this.#pathPoint.init(pointData); // здесь посмотреть
+	#swapEditMenuToPoint = () => {
 		replace(this.#pathPoint, this.#editMenu);
 		document.removeEventListener('keydown', this.#onEscKeyDown);
 		this.#mode = Mode.DEFAULT;
