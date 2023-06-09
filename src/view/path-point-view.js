@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getMinutesFromDate, getHoursFromDate, changeDateFormatToMonth } from '../utils.js';
+import { getMinutesFromDate, getHoursFromDate, changeDateFormatToMonth, changeDateFormatToHours } from '../utils.js';
 import { createOffers } from '../mock/mocks.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
@@ -39,9 +39,9 @@ const createPathPoint = (point) => {
 	  <h3 class="event__title">${type.slice(0,1).toUpperCase() + type.slice(1)} ${destination.name}</h3>
 	  <div class="event__schedule">
 		<p class="event__time">
-		  <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+		  <time class="event__start-time" datetime="2019-03-18T10:30">${changeDateFormatToHours(dateFrom)}</time>
 		  &mdash;
-		  <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+		  <time class="event__end-time" datetime="2019-03-18T11:00">${changeDateFormatToHours(dateTo)}</time>
 		</p>
 		<p class="event__duration">${getDatesDifference(dateFrom,dateTo)[0]}D ${getDatesDifference(dateFrom,dateTo)[1]}H
 		 ${getDatesDifference(dateFrom,dateTo)[2]}M</p>

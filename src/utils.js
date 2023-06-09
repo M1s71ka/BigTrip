@@ -7,7 +7,9 @@ const getRandomNumber = (minimum, maximum) => {
   return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
 };
 
+const changeDateFormat = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
 const changeDateFormatToMonth = (dueDate) => dayjs(dueDate).format('MMM D');
+const changeDateFormatToHours = (dueDate) => dayjs(dueDate).format('HH:mm');
 const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
 const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
 
@@ -75,5 +77,5 @@ const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePric
 const sortPointsByTime = (pointA, pointB) =>
 //Возможно нужна проверка на null, проверить, когда будет сервер.
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
-export {getRandomNumber, changeDateFormatToMonth, getMinutesFromDate, getHoursFromDate, getOffersByPointType, getPhotosByDestination,
-  updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
+export {getRandomNumber, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate, getOffersByPointType,
+  getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
