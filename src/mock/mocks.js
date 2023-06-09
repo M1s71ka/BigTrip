@@ -1,24 +1,21 @@
 import { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, PATH_ID, PointPrice, OffersPrice} from './constants.js';
-import { getRandomNumber } from '../utils.js';
+import { getRandomNumber, getOffersByPointType, getPhotosByDestination } from '../utils.js';
 import dayjs from 'dayjs';
 
 const offers = OFFERS.slice();
 let idList = PATH_ID.slice();
 
-const getPointDescription = () => (
-  {
+const getPointDescription = () => {
+  const destinationName = DESTINATION_POINTS[getRandomNumber(0, DESTINATION_POINTS.length - 1)];
+  return {
     id: String(idList[0]),
     description: POINTS_DESCRIPTIONS[getRandomNumber(0, POINTS_DESCRIPTIONS.length - 1)],
-    name: DESTINATION_POINTS[getRandomNumber(0, DESTINATION_POINTS.length - 1)],
+    name: destinationName,
     pictures: [
-      {
-        src: `http://picsum.photos/248/152?r=${getRandomNumber(50, 100)}`,
-        description: POINTS_DESCRIPTIONS[getRandomNumber(0, POINTS_DESCRIPTIONS.length - 1)],
-      }
+      ...getPhotosByDestination(destinationName)
     ]
-  }
-);
-
+  };
+};
 
 const initRandomDate = () =>  {
   const dayFrom = getRandomNumber(1, 15);
@@ -26,12 +23,12 @@ const initRandomDate = () =>  {
   return [dayjs().add(dayFrom, 'day').toDate(), dayjs().add(dayTo, 'day').toDate()];
 };
 
-export const createOffers = () => {
+export const createOffers = (offersByType) => {
   const tripOffers = [];
-  for (let i = 0; i < offers.length; i++) {
+  for (let i = 0; i < offersByType.length; i++) {
     tripOffers[i] = {
       id: i + 1,
-      title: offers[i],
+      title: offers[offersByType[i]],
       price: getRandomNumber(OffersPrice.MIN, OffersPrice.MAX),
     };
   }
@@ -48,7 +45,7 @@ export const createPointDescription = () => {
     destination: getPointDescription(),
     id: String(idList[0]),
     isFavorite: false,
-    offers: [getRandomNumber(1, offers.length)],
+    offers: getOffersByPointType(pointType),
     type: pointType,
   };
   idList = idList.slice(1);

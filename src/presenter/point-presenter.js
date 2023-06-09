@@ -1,5 +1,5 @@
-import EditPointView from '../view/path-editing.js';
-import PointView from '../view/path-pointing.js';
+import EditPointView from '../view/path-edit-view.js';
+import PointView from '../view/path-point-view.js';
 import { remove, render, replace } from '../framework/render.js';
 
 const Mode = {
@@ -26,7 +26,8 @@ export default class PathPointPresenter {
 		this.#point = point;
 		const prevPathPoint = this.#pathPoint;
 		const prevEditMenu = this.#editMenu;
-		this.#pathPoint = new PointView(this.#point);
+		this.#pathPoint = new PointView(); //изменение
+		this.#pathPoint.init(this.#point);
     	this.#editMenu = new EditPointView(this.#point);
 		this.#pathPoint._setClickHandler(this.#swapPointToEditMenu);
 		this.#pathPoint._setClickFavouriteHandler(this.#setFavouritePoint);
@@ -63,11 +64,12 @@ export default class PathPointPresenter {
 		  evt.preventDefault();
 		  replace(this.#pathPoint, this.#editMenu);
 		  document.removeEventListener('keydown', this.#onEscKeyDown);
-		  
+		  this.#mode = Mode.DEFAULT;
 		}
 	};
 
-	#swapEditMenuToPoint = () => {
+	#swapEditMenuToPoint = (pointData) => {
+		this.#pathPoint.init(pointData); // здесь посмотреть
 		replace(this.#pathPoint, this.#editMenu);
 		document.removeEventListener('keydown', this.#onEscKeyDown);
 		this.#mode = Mode.DEFAULT;
@@ -76,7 +78,7 @@ export default class PathPointPresenter {
 	#swapPointToEditMenu = () => {
 		replace(this.#editMenu, this.#pathPoint);
 		this.#editMenu._setClickHandler(this.#swapEditMenuToPoint);
-		this.#editMenu._setSaveButtonHandler(this.#swapEditMenuToPoint);
+		this.#editMenu._setFormSubmitHandler(this.#swapEditMenuToPoint);
 		document.addEventListener('keydown', this.#onEscKeyDown);
 		this.#changeMode();
 		this.#mode = Mode.EDITING;
