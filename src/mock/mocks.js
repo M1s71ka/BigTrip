@@ -29,7 +29,7 @@ export const createOffers = (offersByType) => {
     tripOffers[i] = {
       id: i + 1,
       title: offers[offersByType[i]],
-      price: getRandomNumber(OffersPrice.MIN, OffersPrice.MAX),
+      price: OffersPrice[offers[offersByType[i]]],
     };
   }
   return tripOffers;

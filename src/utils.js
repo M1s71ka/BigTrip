@@ -1,10 +1,20 @@
 import dayjs from 'dayjs';
-import { POINTS_DESCRIPTIONS, OffersByType, PhotosByDestination } from './mock/constants';
+import { POINTS_DESCRIPTIONS, OffersByType, PhotosByDestination, FilterType } from './mock/constants';
 
 const getRandomNumber = (minimum, maximum) => {
   minimum = Math.ceil(Math.min(Math.abs(minimum), Math.abs(maximum)));
   maximum = Math.floor(Math.max(Math.abs(minimum), Math.abs(maximum)));
   return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+};
+
+const isPointFuture = (point) => point.dateFrom >= dayjs(new Date());
+
+const isPointPast= (point) => point.dateTo < dayjs(new Date());
+
+const filter = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isPointFuture(point)),
+  [FilterType.PAST]: (points) => points.filter((point) => isPointPast(point)),
 };
 
 const changeDateFormat = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
@@ -77,5 +87,5 @@ const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePric
 const sortPointsByTime = (pointA, pointB) =>
 //Возможно нужна проверка на null, проверить, когда будет сервер.
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
-export {getRandomNumber, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate, getOffersByPointType,
+export {getRandomNumber, filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate, getOffersByPointType,
   getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
