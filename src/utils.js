@@ -9,7 +9,7 @@ const getRandomNumber = (minimum, maximum) => {
 
 const isPointFuture = (point) => point.dateFrom >= dayjs(new Date());
 
-const isPointPast= (point) => point.dateTo < dayjs(new Date());
+const isPointPast = (point) => point.dateTo < dayjs(new Date());
 
 const filter = {
   [FilterType.EVERYTHING]: (points) => points,

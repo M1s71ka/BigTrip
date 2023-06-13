@@ -17,7 +17,7 @@ const getPointDescription = () => {
   };
 };
 
-const initRandomDate = () =>  {
+const initRandomDate = () => {
   const dayFrom = getRandomNumber(1, 15);
   const dayTo = getRandomNumber(16, 31);
   return [dayjs().add(dayFrom, 'day').toDate(), dayjs().add(dayTo, 'day').toDate()];
