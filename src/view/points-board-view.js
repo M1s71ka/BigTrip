@@ -1,4 +1,4 @@
-import AbstractView from "../framework/view/abstract-view";
+import AbstractView from '../framework/view/abstract-view';
 
 const createBoardTemplate = () =>(
   '<ul class="trip-events__list"></ul>'
@@ -6,6 +6,6 @@ const createBoardTemplate = () =>(
 
 export default class PointsBoard extends AbstractView {
   get template() {
-      return createBoardTemplate();
+    return createBoardTemplate();
   }
-};
+}
