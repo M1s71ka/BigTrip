@@ -10,9 +10,10 @@ const PointPrice = {
   MAX: 1200,
 };
 
-const OffersPrice = {
-  MIN: 15,
-  MAX: 120,
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
 };
 
 const OffersByType = {
@@ -45,5 +46,28 @@ for (let i = 1; i <= 10; i++) {
   PATH_ID.push(i);
 }
 
-export { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, ERROR_MESSAGES, PATH_ID, PointPrice, OffersPrice, OffersByType,
-  PhotosByDestination, SortingType };
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const OffersPrice = {
+  'Add luggage': 120,
+  'Switch to comfort': 80,
+  'Add meal': 20,
+  'Choose seats': 50,
+  'Upgrade to a business class': 150,
+  'Extra Water': 5,
+  'Order Uber': 30,
+};
+
+export { POINT_TYPES, OFFERS, DESTINATION_POINTS, POINTS_DESCRIPTIONS, ERROR_MESSAGES,
+  PATH_ID, PointPrice, OffersPrice, FilterType, OffersByType, PhotosByDestination,
+  SortingType, UserAction, UpdateType };

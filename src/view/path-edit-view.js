@@ -1,8 +1,28 @@
+import { nanoid } from 'nanoid';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { createOffers } from '../mock/mocks.js';
 import { changeDateFormat, getOffersByPointType, getPhotosByDestination } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
+
+const BLANK_POINT = {
+	basePrice: 0,
+    dateFrom: new Date(),
+    dateTo: new Date(),
+    destination: {
+		id: nanoid(),
+    	description: 'Great place to visit!',
+    	name: 'Washington',
+    	pictures: [
+      		...getPhotosByDestination('Washington')
+    	]
+	},
+    id: nanoid(),
+    isFavorite: false,
+    offers: [0, 1],
+    type: 'taxi',
+};
 
 const getOffers = (offers) => {
 	const tripOffers = createOffers(offers);
@@ -108,7 +128,7 @@ const createEditMenu = (state) => {
 		<label class="event__label  event__type-output" for="event-destination-1">
 		${type.slice(0,1).toUpperCase() + type.slice(1)}
 		</label>
-		<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isDescription ? destination.name : ''}" list="destination-list-1">
+		<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isDescription ? he.encode(destination.name) : ''}" list="destination-list-1">
 		<datalist id="destination-list-1">
 		  <option value="New York"></option>
 		  <option value="Washington"></option>
@@ -164,7 +184,7 @@ export default class EditPointView extends AbstractStatefulView {
   #dateToPicker = null;
   #stateCopy = null;
 
-  constructor(point) {
+  constructor(point = BLANK_POINT) {
 	super();
 	this.#stateCopy = point;
     this._state = EditPointView.parsePointToState(point);
@@ -193,57 +213,68 @@ export default class EditPointView extends AbstractStatefulView {
   static parsePointToState = (point) => ({
 		...point,
 		isOffers: point.offers.length !== 0,
-		isDescription: point.destination.description !== null,
-		isPhotos: point.destination.pictures.length !== 0,
+		isDescription: point.destination !== null,
+		isPhotos: (point.destination ? point.destination.pictures.length !== 0 : false),
   	});
 
   static parseStateToPoint = (state) => {
-	const task = {...state}
+	const point = {...state};
 
 	if (!state.isOffers) {
-		task.offers = [];
+		point.offers = [];
 	}
 
 	if (!state.isDescription) {
-		task.destination.description = null;
+		point.destination = null;
 	}
 
 	if (!state.isPhotos) {
-		task.destination.pictures = [];
+		(point.destination ? point.destination.pictures = [] : point.destination = null);
 	}
 
-	delete task.isOffers;
-	delete task.isDescription;
-	delete task.isPhotos;
+	delete point.isOffers;
+	delete point.isDescription;
+	delete point.isPhotos;
 
-	return task;
+	return point;
   };
 
   _restoreHandlers = () => {
 	this.#setInnerHandlers();
 	this.#setDatePicker();
-	this._setClickHandler(this._callback.rollUp);
-	this._setFormSubmitHandler(this._callback.saveCard);
+	this.setClickHandler(this._callback.rollUp);
+	this.setFormSubmitHandler(this._callback.saveCard);
+	this.setDeletePointHandler(this._callback.deleteCard);
   };
 
-  _setClickHandler = (callback) => {
+  setClickHandler = (callback) => {
 	this._callback.rollUp = callback;
-	this.element.querySelector('.event__rollup-btn').addEventListener('click', this._rollUpCard);
+	this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpCard);
   };
 
-  _setFormSubmitHandler = (callback) => {
+  setFormSubmitHandler = (callback) => {
 	this._callback.saveCard = callback;
-	this.element.querySelector('.event__save-btn').addEventListener('click', this._saveForm);
+	this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveForm);
   };
 
-  _rollUpCard = (evt) => {
+  setDeletePointHandler = (callback) => {
+	this._callback.deleteCard = callback;
+	this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteCard);
+  };
+
+  #rollUpCard = (evt) => {
 	evt.preventDefault();
 	this._callback.rollUp(this.#stateCopy);
   };
 
-  _saveForm = (evt) => {
+  #saveForm = (evt) => {
 	evt.preventDefault();
 	this._callback.saveCard(EditPointView.parseStateToPoint(this._state));
+  };
+
+  #deleteCard = (evt) => {
+	evt.preventDefault();
+	this._callback.deleteCard(EditPointView.parseStateToPoint(this._state));
   };
 
   #dateFromChangeHandler = ([newDateFrom]) => {
@@ -287,7 +318,8 @@ export default class EditPointView extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
 	this.element.querySelector('.event__type-list').addEventListener('click', this.#swapTypeHandler);
-	this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationHandler);
+	this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationHandler)
+	this.element.querySelector('.event__input--price').addEventListener('input', this.#changePriceHandler);
   };
 
   #swapTypeHandler = (evt) => {
@@ -311,7 +343,16 @@ export default class EditPointView extends AbstractStatefulView {
 				name: evt.target.value, 
 				pictures: [...getPhotosByDestination(evt.target.value)],
 			},
+			isDescription: true,
 			isPhotos: isNewPhotos,
+		});
+	}
+  };
+
+  #changePriceHandler = (evt) => {
+	if (!isNaN(evt.target.value)){
+		this.updateElement ({
+			basePrice: evt.target.value,
 		});
 	}
   };

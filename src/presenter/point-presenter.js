@@ -26,11 +26,11 @@ export default class PathPointPresenter {
 		this.#point = point;
 		const prevPathPoint = this.#pathPoint;
 		const prevEditMenu = this.#editMenu;
-		this.#pathPoint = new PointView(); //изменение
+		this.#pathPoint = new PointView(); 
 		this.#pathPoint.init(this.#point);
     	this.#editMenu = new EditPointView(this.#point);
-		this.#pathPoint._setClickHandler(this.#swapPointToEditMenu);
-		this.#pathPoint._setClickFavouriteHandler(this.#setFavouritePoint);
+		this.#pathPoint.setClickHandler(this.#swapPointToEditMenu);
+		this.#pathPoint.setClickFavouriteHandler(this.#setFavouritePoint);
 
 		if (prevPathPoint === null || prevEditMenu == null) {
 			render(this.#pathPoint, this.#pointsList);
@@ -63,6 +63,7 @@ export default class PathPointPresenter {
 		if (evt.keyCode === 27) {
 		  evt.preventDefault();
 		  replace(this.#pathPoint, this.#editMenu);
+		  this.#changeData('UPDATE_POINT', 'PATCH', this.#point)
 		  document.removeEventListener('keydown', this.#onEscKeyDown);
 		  this.#mode = Mode.DEFAULT;
 		}
@@ -76,14 +77,33 @@ export default class PathPointPresenter {
 
 	#swapPointToEditMenu = () => {
 		replace(this.#editMenu, this.#pathPoint);
-		this.#editMenu._setClickHandler(this.#swapEditMenuToPoint);
-		this.#editMenu._setFormSubmitHandler(this.#swapEditMenuToPoint);
+		this.#editMenu.setClickHandler(this.#rollUpCardHandler);
+		this.#editMenu.setFormSubmitHandler(this.#submitFormHandler);
+		this.#editMenu.setDeletePointHandler(this.#deletePointHandler);
 		document.addEventListener('keydown', this.#onEscKeyDown);
 		this.#changeMode();
 		this.#mode = Mode.EDITING;
 	};
 
+	#submitFormHandler = (update) => {
+		this.#swapEditMenuToPoint();
+		if (JSON.stringify(this.#point) === JSON.stringify(update)) {
+			return;
+		}
+		this.#changeData('UPDATE_POINT', 'MINOR', update);
+	};
+
+	#rollUpCardHandler = (startState) => {
+		this.#swapEditMenuToPoint();
+		this.#changeData('UPDATE_POINT', 'PATCH', startState);
+	};
+
+	#deletePointHandler = (pointToDelete) => {
+		this.#swapEditMenuToPoint();
+		this.#changeData('DELETE_POINT', 'MINOR', pointToDelete);
+	};
+
 	#setFavouritePoint = () => {
-		this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite})
-	}
+		this.#changeData('UPDATE_POINT','PATCH',{...this.#point, isFavorite: !this.#point.isFavorite})
+	};
 }
