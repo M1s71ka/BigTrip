@@ -25,17 +25,16 @@ const BLANK_POINT = {
 };
 
 const getOffers = (offers) => {
-	const tripOffers = createOffers(offers);
 	let offersWrapper = '<div class="event__available-offers">';
-	  for (let j = 0; j < tripOffers.length; j++) {
+	  for (let i = 0; i < offers.length; i++) {
 		  offersWrapper += `
 				  <div class="event__offer-selector">
-					  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}-${tripOffers[j].id}"
-					   type="checkbox" name="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}">
-					  <label class="event__offer-label" for="event-offer-${tripOffers[j].title.toLowerCase().split(' ').join('')}-${tripOffers[j].id}">
-							<span class="event__offer-title">${tripOffers[j].title}</span>
+					  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offers[i].title.toLowerCase().split(' ').join('')}-${offers[i].id}"
+					   type="checkbox" name="event-offer-${offers[i].title.toLowerCase().split(' ').join('')}" checked>
+					  <label class="event__offer-label" for="event-offer-${offers[i].title.toLowerCase().split(' ').join('')}-${offers[i].id}">
+							<span class="event__offer-title">${offers[i].title}</span>
 							&plus;&euro;&nbsp;
-						<span class="event__offer-price">${tripOffers[j].price}</span>
+						<span class="event__offer-price">${offers[i].price}</span>
 					  </label>
 				  </div>`;
 		}
@@ -183,11 +182,15 @@ export default class EditPointView extends AbstractStatefulView {
   #dateFromPicker = null;
   #dateToPicker = null;
   #stateCopy = null;
+  #destinations = null;
+  #offers = null;
 
-  constructor(point = BLANK_POINT) {
+  constructor(point = BLANK_POINT, destinations, offers) {
 	super();
 	this.#stateCopy = point;
     this._state = EditPointView.parsePointToState(point);
+	this.#destinations = destinations;
+	this.#offers = offers;
 	this.#setInnerHandlers();
 	this.#setDatePicker();
   }
@@ -296,7 +299,7 @@ export default class EditPointView extends AbstractStatefulView {
 			{
 				dateFormat: 'd/m/y h:i',
 				defaultDate: this._state.dateFrom,
-				minDate: 'today',
+				minDate: this._state.dateFrom,
 				maxDate: this._state.dateTo,
 				onChange: this.#dateFromChangeHandler,
 			}
@@ -326,22 +329,27 @@ export default class EditPointView extends AbstractStatefulView {
 	evt.preventDefault();
 	if (evt.target.classList.contains('event__type-label')) {
 		this.updateElement({
-			isOffers: getOffersByPointType(evt.target.previousElementSibling.value).length !== 0,
-			offers: getOffersByPointType(evt.target.previousElementSibling.value),
+			isOffers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers.length !== 0,
+			offers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers,
 			type: evt.target.previousElementSibling.value,
 		});
 	}
   };
 
   #changeDestinationHandler = (evt) => {
-	const isNewPhotos = getPhotosByDestination(evt.target.value).length !== 0;
+	let isNewPhotos = false;
+	const isDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
+	if (isDestination !== undefined) {
+		isNewPhotos = this.#destinations.find((destination) => destination.name === evt.target.value).pictures.length !== 0;
+	}
 	if (isNewPhotos) {
 		this.updateElement(
 		{
 			destination: {
 				...this._state.destination,
+				description: this.#destinations.find((destination) => destination.name === evt.target.value).description,
 				name: evt.target.value, 
-				pictures: [...getPhotosByDestination(evt.target.value)],
+				pictures: [...this.#destinations.find((destination) => destination.name === evt.target.value).pictures],
 			},
 			isDescription: true,
 			isPhotos: isNewPhotos,

@@ -7,9 +7,9 @@ const getRandomNumber = (minimum, maximum) => {
   return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
 };
 
-const isPointFuture = (point) => point.dateFrom >= dayjs(new Date());
+const isPointFuture = (point) => dayjs(point.dateFrom).diff(dayjs(new Date)) > 0;
 
-const isPointPast = (point) => point.dateTo < dayjs(new Date());
+const isPointPast = (point) => dayjs(point.dateTo).diff(new Date()) < 0;
 
 const filter = {
   [FilterType.EVERYTHING]: (points) => points,
@@ -22,6 +22,19 @@ const changeDateFormatToMonth = (dueDate) => dayjs(dueDate).format('MMM D');
 const changeDateFormatToHours = (dueDate) => dayjs(dueDate).format('HH:mm');
 const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
 const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
+
+const getDatesDifferenceByTimeType = (dateTo, dateFrom, time) => {
+  const departureDay = dayjs(dateFrom);
+  const arrivingDay = dayjs(dateTo);
+  switch (time) {
+    case 'd':
+      return Math.floor(arrivingDay.diff(departureDay) / 86400000);
+    case 'h':
+      return Math.floor((arrivingDay.diff(departureDay) % 86400000) / 3600000);
+    case 'm':
+      return Math.floor(((arrivingDay.diff(departureDay) % 86400000) % 3600000) / 60000);
+  }
+};
 
 const getOffersByPointType = (type) => {
   if (type !== 'check-in') {
@@ -85,7 +98,7 @@ const sortPointByDateUp = (pointA, pointB) => {
 const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
 const sortPointsByTime = (pointA, pointB) =>
-//Возможно нужна проверка на null, проверить, когда будет сервер.
-  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'd') - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'd');
-export {getRandomNumber, filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate, getOffersByPointType,
-  getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+
+export {getRandomNumber, filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate,
+  getOffersByPointType, getDatesDifferenceByTimeType, getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};

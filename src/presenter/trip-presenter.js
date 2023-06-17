@@ -6,23 +6,25 @@ import PathPointPresenter from './point-presenter.js';
 import { filter, sortPointByDateUp, sortPointsByPrice, sortPointsByTime } from '../utils.js';
 import { FilterType, SortingType, UpdateType, UserAction } from '../mock/constants.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class DefaultMarkupPresenter {
   #pointsModel = null;
   #filtersModel = null;
   #sortingComponent = null;
   #noTaskComponent = null;
-  #pointsBoardComponent = null;
+  #pointsBoardComponent = new PointsBoard();
   #tripPointsSection = null;
   #pointPresenter = null;
   #currentSortType = null;
   #filterType = null;
   #newPointPresenter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   constructor(pointsModel, filtersModel) {
 	this.#pointsModel = pointsModel;
 	this.#filtersModel = filtersModel;
-	this.#pointsBoardComponent = new PointsBoard();
 	this.#newPointPresenter = new NewPointPresenter(this.#pointsBoardComponent, this.#handleActionView);
 	this.#pointsModel.addObserver(this.#handleModelEvent);
 	this.#filtersModel.addObserver(this.#handleModelEvent);
@@ -92,12 +94,22 @@ export default class DefaultMarkupPresenter {
 			this.#clearPointsList(true);
 			this.#renderPointsBoardComponent();
 			break;
+		case UpdateType.INIT: {
+			this.#isLoading = false;
+			remove(this.#loadingComponent);
+			this.#renderPointsBoardComponent();
+			break;
+		}
 	}
   };
 
   #renderNoTasksComponent = () => {
 	this.#noTaskComponent = new NoTaskView(this.#filterType);
 	render(this.#noTaskComponent, this.#tripPointsSection);
+  };
+
+  #renderLoadingComponent = () => {
+	render(this.#loadingComponent, this.#tripPointsSection);
   };
 
   #changeSortingType = (sortType) => {
@@ -132,12 +144,18 @@ export default class DefaultMarkupPresenter {
   };
 
   #renderPathPointComponent = (point, pointsList) => {
-    const pathPoint = new PathPointPresenter(pointsList, this.#handleActionView, this.#changeModeHandler);
+    const pathPoint = new PathPointPresenter(pointsList, this.#handleActionView, this.#changeModeHandler, this.#pointsModel.destinations,
+	this.#pointsModel.offers);
 	pathPoint.init(point);
 	this.#pointPresenter.set(point.id, pathPoint);
   };
 
   #renderPointsBoardComponent = () => {
+	if (this.#isLoading) {
+		this.#renderLoadingComponent();
+		return;
+	}
+
 	if (this.points.length === 0) {
 		this.#renderNoTasksComponent(this.#filterType);
 		return;
