@@ -24,16 +24,16 @@ const getMinutesFromDate = (dueDate) => dayjs(dueDate).format('m');
 const getHoursFromDate = (dueDate) => dayjs(dueDate).format('h');
 
 const getDatesDifferenceByTimeType = (dateTo, dateFrom, time) => {
-	const departureDay = dayjs(dateFrom);
-  	const arrivingDay = dayjs(dateTo);
-	switch (time) {
-		case 'd':
-			return Math.floor(arrivingDay.diff(departureDay) / 86400000);
-		case 'h':
-			return Math.floor((arrivingDay.diff(departureDay) % 86400000) / 3600000);
-		case 'm':
-			return Math.floor(((arrivingDay.diff(departureDay) % 86400000) % 3600000) / 60000);
-	}
+  const departureDay = dayjs(dateFrom);
+  const arrivingDay = dayjs(dateTo);
+  switch (time) {
+    case 'd':
+      return Math.floor(arrivingDay.diff(departureDay) / 86400000);
+    case 'h':
+      return Math.floor((arrivingDay.diff(departureDay) % 86400000) / 3600000);
+    case 'm':
+      return Math.floor(((arrivingDay.diff(departureDay) % 86400000) % 3600000) / 60000);
+  }
 };
 
 const getOffersByPointType = (type) => {
@@ -101,4 +101,4 @@ const sortPointsByTime = (pointA, pointB) =>
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
 
 export {getRandomNumber, filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate,
-	 getOffersByPointType, getDatesDifferenceByTimeType, getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
+  getOffersByPointType, getDatesDifferenceByTimeType, getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};

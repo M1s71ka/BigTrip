@@ -31,6 +31,6 @@ const filterPresenter = new FilterPresenter(filtersWrapper, filterModel, tripMod
 filterPresenter.init();
 tripPresenter.init();
 tripModel.init()
-	.finally(() => {
-		newEventButton.disabled = false;
-	});
+  .finally(() => {
+    newEventButton.disabled = false;
+  });

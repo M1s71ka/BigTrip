@@ -36,10 +36,6 @@ export default class TripModel extends Observable {
 		this.#destinations = destinations;
 		this.#offers = offers;
 		this.#points = points.map(this.#adaptToClient);
-		console.log(this.#points)
-		console.log(this.#destinations);
-		console.log(this.#offers);
-		console.log('----------------');
 	} catch(err) {
 		this.#points = [];
 		this.#destinations = [];
