@@ -1,25 +1,21 @@
-import dayjs from 'dayjs';
-import { getMinutesFromDate, getHoursFromDate, changeDateFormatToMonth, changeDateFormatToHours } from '../utils.js';
-import { createOffers } from '../mock/mocks.js';
+import { getDatesDifferenceByTimeType, changeDateFormatToMonth, changeDateFormatToHours } from '../utils.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const getDatesDifference = (dateFrom, dateTo) => {
-  const departureDay = dayjs(dateFrom);
-  const arrivingDay = dayjs(dateTo);
-  const minutesDifference = getMinutesFromDate(dateTo) - getMinutesFromDate(dateFrom);
-  const hoursDifference = getHoursFromDate(dateTo) - getHoursFromDate(dateFrom);
-  return [arrivingDay.diff(departureDay, 'd'), minutesDifference, hoursDifference];
+  const daysDifference = getDatesDifferenceByTimeType(dateTo, dateFrom, 'd');
+  const hoursDifference = getDatesDifferenceByTimeType(dateTo, dateFrom,'h');
+  const minutesDifference = getDatesDifferenceByTimeType(dateTo, dateFrom,'m');
+  return [daysDifference, hoursDifference, minutesDifference];
 };
 
 const getSelectedOffers = (offers) => {
-  const tripOffers = createOffers(offers);
   let selectedOffersWrapper = '<ul class="event__selected-offers">';
-    for (let i = 0; i < tripOffers.length; i++) {
+    for (let i = 0; i < offers.length; i++) {
         selectedOffersWrapper +=
 				`<li class="event__offer">
-					<span class="event__offer-title">${tripOffers[i].title}</span>
+					<span class="event__offer-title">${offers[i].title}</span>
 					&plus;&euro;&nbsp;
-					<span class="event__offer-price">${tripOffers[i].price}</span>
+					<span class="event__offer-price">${offers[i].price}</span>
 	  			</li>`;
       }
   selectedOffersWrapper += '</ul>';

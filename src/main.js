@@ -1,9 +1,13 @@
-import DefaultMarkupPresenter from './presenter/trip-presenter.js';
-import TripModel from './model/trip-model.js';
-import FilterPresenter from './presenter/filter-presenter.js';
-import FilterModel from './model/filter-model.js';
+import DefaultMarkupPresenter from './presenter/trip-presenter';
+import TripModel from './model/trip-model';
+import FilterPresenter from './presenter/filter-presenter';
+import FilterModel from './model/filter-model';
+import PointsApiService from './points-api-service';
 
-const tripModel = new TripModel();
+const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
+const AUTHORIZATION = 'Basic h4f6ny3ci85t9ogm';
+
+const tripModel = new TripModel(new PointsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 const tripPresenter = new DefaultMarkupPresenter(tripModel, filterModel);
 
@@ -26,3 +30,7 @@ const filterPresenter = new FilterPresenter(filtersWrapper, filterModel, tripMod
 
 filterPresenter.init();
 tripPresenter.init();
+tripModel.init()
+	.finally(() => {
+		newEventButton.disabled = false;
+	});

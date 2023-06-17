@@ -13,13 +13,17 @@ export default class PathPointPresenter {
 	#editMenu = null;
 	#pointsList = null;
 	#changeData = null;
+	#destinations = null;
+	#offers = null;
 	#mode = Mode.DEFAULT;
 	#changeMode = null;
 
-	constructor(pointsList, changeData, changeMode) {	
+	constructor(pointsList, changeData, changeMode, destinations, offers) {	
 		this.#pointsList = pointsList;
 		this.#changeData = changeData;
 		this.#changeMode = changeMode;
+		this.#destinations = destinations;
+		this.#offers = offers;
 	}
 
 	init(point) {
@@ -28,7 +32,7 @@ export default class PathPointPresenter {
 		const prevEditMenu = this.#editMenu;
 		this.#pathPoint = new PointView(); 
 		this.#pathPoint.init(this.#point);
-    	this.#editMenu = new EditPointView(this.#point);
+    	this.#editMenu = new EditPointView(this.#point, this.#destinations, this.#offers);
 		this.#pathPoint.setClickHandler(this.#swapPointToEditMenu);
 		this.#pathPoint.setClickFavouriteHandler(this.#setFavouritePoint);
 
