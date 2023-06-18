@@ -1,6 +1,6 @@
-import EditPointView from '../view/path-edit-view.js';
-import PointView from '../view/path-point-view.js';
-import { remove, render, replace } from '../framework/render.js';
+import EditPointView from '../view/path-edit-view';
+import PointView from '../view/path-point-view';
+import { remove, render, replace } from '../framework/render';
 
 const Mode = {
 	DEFAULT: 'DEFAULT',
@@ -10,7 +10,7 @@ const Mode = {
 export default class PathPointPresenter {
 	#point = null;
 	#pathPoint = null;
-	#editMenu = null;
+	#pathPointEditComponent = null;
 	#pointsList = null;
 	#changeData = null;
 	#destinations = null;
@@ -29,10 +29,10 @@ export default class PathPointPresenter {
 	init(point) {
 		this.#point = point;
 		const prevPathPoint = this.#pathPoint;
-		const prevEditMenu = this.#editMenu;
+		const prevEditMenu = this.#pathPointEditComponent;
 		this.#pathPoint = new PointView(); 
 		this.#pathPoint.init(this.#point);
-    	this.#editMenu = new EditPointView(this.#point, this.#destinations, this.#offers);
+    	this.#pathPointEditComponent = new EditPointView(this.#point, this.#destinations, this.#offers);
 		this.#pathPoint.setClickHandler(this.#swapPointToEditMenu);
 		this.#pathPoint.setClickFavouriteHandler(this.#setFavouritePoint);
 
@@ -46,12 +46,49 @@ export default class PathPointPresenter {
 		}
 
 		if (this.#mode === Mode.EDITING) {
-			replace(this.#editMenu, prevEditMenu);
+			replace(this.#pathPointEditComponent, prevEditMenu);
+			this.#mode = Mode.DEFAULT;
 		}
 
 		remove(prevPathPoint);
 		remove(prevEditMenu);
 	};
+
+	setSaving = () => {
+		if (this.#mode === Mode.EDITING) {
+			console.log(this.#pathPointEditComponent);
+			this.#pathPointEditComponent.updateElement({
+				isDisabled: true,
+				isSaving: true,
+			});
+		}
+	};
+
+	setDeleting = () => {
+		if (this.#mode === Mode.EDITING) {
+			this.#pathPointEditComponent.updateElement({
+				isDisabled: true,
+				isDeleting: true,
+			});
+		}
+	};
+
+	setAborting = () => {
+		if (this.#mode === Mode.DEFAULT) {
+			this.#pathPointEditComponent.shake();
+			return;
+		}
+
+		const resetFormState = () => {
+			this.#pathPointEditComponent.updateElement({
+				isDisabled: false,
+				isSaving: false,
+				isDeleting: false,
+			});
+		}
+
+		this.#pathPointEditComponent.shake(resetFormState);
+	}
 
 	resetView = () => {
 		if (this.#mode !== Mode.DEFAULT) {
@@ -66,7 +103,7 @@ export default class PathPointPresenter {
 	#onEscKeyDown = (evt) => {
 		if (evt.keyCode === 27) {
 		  evt.preventDefault();
-		  replace(this.#pathPoint, this.#editMenu);
+		  replace(this.#pathPoint, this.#pathPointEditComponent);
 		  this.#changeData('UPDATE_POINT', 'PATCH', this.#point)
 		  document.removeEventListener('keydown', this.#onEscKeyDown);
 		  this.#mode = Mode.DEFAULT;
@@ -74,16 +111,16 @@ export default class PathPointPresenter {
 	};
 
 	#swapEditMenuToPoint = () => {
-		replace(this.#pathPoint, this.#editMenu);
+		replace(this.#pathPoint, this.#pathPointEditComponent);
 		document.removeEventListener('keydown', this.#onEscKeyDown);
 		this.#mode = Mode.DEFAULT;
 	};
 
 	#swapPointToEditMenu = () => {
-		replace(this.#editMenu, this.#pathPoint);
-		this.#editMenu.setClickHandler(this.#rollUpCardHandler);
-		this.#editMenu.setFormSubmitHandler(this.#submitFormHandler);
-		this.#editMenu.setDeletePointHandler(this.#deletePointHandler);
+		replace(this.#pathPointEditComponent, this.#pathPoint);
+		this.#pathPointEditComponent.setClickHandler(this.#rollUpCardHandler);
+		this.#pathPointEditComponent.setFormSubmitHandler(this.#submitFormHandler);
+		this.#pathPointEditComponent.setDeletePointHandler(this.#deletePointHandler);
 		document.addEventListener('keydown', this.#onEscKeyDown);
 		this.#changeMode();
 		this.#mode = Mode.EDITING;

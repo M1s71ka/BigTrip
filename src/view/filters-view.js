@@ -1,6 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractView from '../framework/view/abstract-view';
 
-const createFiltersTemplate = (filters, currentFilter, pointsCount) => {
+const createFiltersTemplate = (currentFilter) => {
   return (
     `<div class="trip-main__trip-controls  trip-controls">
 		  <div class="trip-controls__navigation">
@@ -40,19 +40,15 @@ const createFiltersTemplate = (filters, currentFilter, pointsCount) => {
 };
 
 export default class FiltersView extends AbstractView {
-  #points = null;
-  #filters = null;
   #currentFilter = null;
 
-  constructor(filters, currentFilter, points) {
+  constructor(currentFilter) {
     super();
-    this.#points = points;
-	this.#filters = filters;
 	this.#currentFilter = currentFilter;
   }
 
   get template() {
-    return createFiltersTemplate(this.#filters, this.#currentFilter, this.#points.points.length);
+    return createFiltersTemplate(this.#currentFilter);
   }
 
   setFilterTypeChangeHandler(callback) {
