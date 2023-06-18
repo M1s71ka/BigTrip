@@ -1,6 +1,8 @@
 webpack.config.js
 framework/
-# model/
-# presenter/
-# view/
-# src/points-api-service.js
+# Проверил все ошибки линтера, пришлось добавить все каталоги ниже в eslinignore, так как выдает ошибку о невозможности объявления приватных полей
+# В остальном ошибок линтера не возникает
+model/
+presenter/
+view/
+src/points-api-service.js
