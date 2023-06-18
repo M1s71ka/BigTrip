@@ -1,6 +1,6 @@
 webpack.config.js
 framework/
-model/
-view/
-presenter/
-src/points-api-service.js
+# model/
+# presenter/
+# view/
+# src/points-api-service.js
