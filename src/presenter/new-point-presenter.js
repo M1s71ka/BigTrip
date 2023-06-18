@@ -1,54 +1,120 @@
 import {remove, render, RenderPosition} from '../framework/render';
 import EditPointView from '../view/path-edit-view';
-import {UserAction, UpdateType} from '../mock/constants';
-import { nanoid } from 'nanoid';
+import {UserAction, UpdateType} from '../constants';
+
+const BLANK_POINT = {
+	basePrice: 100,
+    dateFrom: new Date(),
+    dateTo: new Date(),
+    destination: {
+		id: 1,
+    	description: 'Chamonix, is a beautiful city, with crowded streets, for those who value comfort and coziness, famous for its crowded street markets with the best street food in Asia.',
+    	name: 'Chamonix',
+    	pictures: [
+			{
+                "src": "https://18.ecmascript.pages.academy/static/destinations/10.jpg",
+                "description": "Chamonix street market"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/10.jpg",
+                "description": "Chamonix embankment"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/10.jpg",
+                "description": "Chamonix kindergarten"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/17.jpg",
+                "description": "Chamonix park"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/3.jpg",
+                "description": "Chamonix parliament building"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/10.jpg",
+                "description": "Chamonix park"
+            },
+            {
+                "src": "https://18.ecmascript.pages.academy/static/destinations/11.jpg",
+                "description": "Chamonix park"
+            },
+    	]
+	},
+    isFavorite: false,
+    offers: [],
+    type: 'taxi',
+};
 
 export default class NewPointPresenter {
   #taskListContainer = null;
   #changeData = null;
-  #taskEditComponent = null;
+  #pointEditComponent = null;
   #destroyCallback = null;
+  #destinations = null;
+  #offers = null;
 
-  constructor(taskListContainer, changeData) {
+  constructor(taskListContainer, changeData, destinations, offers) {
     this.#taskListContainer = taskListContainer;
     this.#changeData = changeData;
+	this.#destinations = destinations;
+	this.#offers = offers;
   }
 
   init = (callback) => {
     this.#destroyCallback = callback;
 
-    if (this.#taskEditComponent !== null) {
+    if (this.#pointEditComponent !== null) {
       return;
     }
 
-    this.#taskEditComponent = new EditPointView();
-    this.#taskEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#taskEditComponent.setDeletePointHandler(this.#handleDeleteClick);
-	this.#taskEditComponent.setClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent = new EditPointView(BLANK_POINT, this.#destinations, this.#offers);
+    this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setDeletePointHandler(this.#handleDeleteClick);
+	this.#pointEditComponent.setClickHandler(this.#handleDeleteClick);
 
-    render(this.#taskEditComponent, this.#taskListContainer.element, RenderPosition.AFTERBEGIN);
+    render(this.#pointEditComponent, this.#taskListContainer.element, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
-    if (this.#taskEditComponent === null) {
+    if (this.#pointEditComponent === null) {
       return;
     }
 
     this.#destroyCallback?.();
 
-    remove(this.#taskEditComponent);
-    this.#taskEditComponent = null;
+    remove(this.#pointEditComponent);
+    this.#pointEditComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #handleFormSubmit = (task) => {
+  setSaving = () => {
+	this.#pointEditComponent.updateElement({
+		isDisabled: true,
+		isSaving: true,
+	});
+  }
+
+  setAborting = () => {
+	const resetFormState = () => {
+		this.#pointEditComponent.updateElement({
+			isDisabled: false,
+			isSaving: false,
+			isDeleting: false,
+		});
+	}
+
+	this.#pointEditComponent.shake(resetFormState);
+}
+
+  #handleFormSubmit = (point) => {
     this.#changeData(
-      UserAction.ADD_POINT, //
+      UserAction.ADD_POINT, 
       UpdateType.MINOR,
-      {id: nanoid(), ...task},
+      point,
     );
   };
 

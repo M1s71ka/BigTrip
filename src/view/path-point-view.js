@@ -1,5 +1,5 @@
-import { getDatesDifferenceByTimeType, changeDateFormatToMonth, changeDateFormatToHours } from '../utils.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import { getDatesDifferenceByTimeType, changeDateFormatToMonth, changeDateFormatToHours } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 const getDatesDifference = (dateFrom, dateTo) => {
   const daysDifference = getDatesDifferenceByTimeType(dateTo, dateFrom, 'd');

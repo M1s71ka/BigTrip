@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { UpdateType } from '../mock/constants';
+import { UpdateType } from '../constants';
 
 export default class TripModel extends Observable {
   #pointsApiService = null;
@@ -66,26 +66,37 @@ export default class TripModel extends Observable {
 	}
 };
 
-  addPoint = (updateType, update) => {
-	this.#points = [
-		update,
-		...this.#points
-	];
-
+  addPoint = async (updateType, update) => {
+	try {
+		const response = await this.#pointsApiService.addPoint(update);
+		const newPoint = this.#adaptToClient(response);
+		this.#points = [
+			newPoint,
+			...this.#points
+		];
+	} catch(err) {
+		throw new Error('Couldn\'t create new point')
+	}
+	
 	this._notify(updateType, update);
   };
 
-  deletePoint = (updateType, update) => {
+  deletePoint = async (updateType, update) => {
 	const index = this.#points.findIndex((item) => item.id === update.id);
 
 	if (index === -1) {
 		throw new Error('Can\'t delete unexisting point');
 	}
 
-	this.#points = [
-		...this.#points.slice(0, index),
-		...this.#points.slice(index + 1)
-	];
+	try {
+		await this.#pointsApiService.deletePoint(update);
+		this.#points = [
+			...this.#points.slice(0, index),
+			...this.#points.slice(index + 1)
+		];
+	} catch(err) {
+		throw new Error('Couldn\'t delete this point');
+	}
 
 	this._notify(updateType);
   };

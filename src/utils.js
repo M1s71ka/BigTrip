@@ -1,11 +1,5 @@
 import dayjs from 'dayjs';
-import { POINTS_DESCRIPTIONS, OffersByType, PhotosByDestination, FilterType } from './mock/constants';
-
-const getRandomNumber = (minimum, maximum) => {
-  minimum = Math.ceil(Math.min(Math.abs(minimum), Math.abs(maximum)));
-  maximum = Math.floor(Math.max(Math.abs(minimum), Math.abs(maximum)));
-  return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
-};
+import { FilterType } from './constants';
 
 const isPointFuture = (point) => dayjs(point.dateFrom).diff(dayjs(new Date)) > 0;
 
@@ -36,44 +30,6 @@ const getDatesDifferenceByTimeType = (dateTo, dateFrom, time) => {
   }
 };
 
-const getOffersByPointType = (type) => {
-  if (type !== 'check-in') {
-    const offersByType = OffersByType[type.split()[0].toUpperCase()];
-    return offersByType;
-  }
-  return OffersByType.CHECKIN;
-};
-
-const getPhotosByDestination = (name) => {
-  const destinationPhotos = [];
-  const destinationName = name.split(' ').join('').toUpperCase();
-  if (!(destinationName in PhotosByDestination)) {
-    return [];
-  }
-  const photos = PhotosByDestination[destinationName];
-  for (let i = 0; i < photos.length; i++) {
-    destinationPhotos[i] = {
-      src: `http://dummyimage.com/${photos[0]}`,
-      description: POINTS_DESCRIPTIONS[getRandomNumber(0, POINTS_DESCRIPTIONS.length - 1)]
-    };
-  }
-  return destinationPhotos;
-};
-
-const updatePoint = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -100,5 +56,5 @@ const sortPointsByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePric
 const sortPointsByTime = (pointA, pointB) =>
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
 
-export {getRandomNumber, filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate,
-  getOffersByPointType, getDatesDifferenceByTimeType, getPhotosByDestination, updatePoint, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};
+export {filter, changeDateFormat, changeDateFormatToMonth, changeDateFormatToHours, getMinutesFromDate, getHoursFromDate,
+  getDatesDifferenceByTimeType, sortPointByDateUp, sortPointsByPrice, sortPointsByTime};

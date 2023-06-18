@@ -1,28 +1,8 @@
-import { nanoid } from 'nanoid';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { createOffers } from '../mock/mocks.js';
-import { changeDateFormat, getOffersByPointType, getPhotosByDestination } from '../utils.js';
+import { changeDateFormat } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
-
-const BLANK_POINT = {
-	basePrice: 0,
-    dateFrom: new Date(),
-    dateTo: new Date(),
-    destination: {
-		id: nanoid(),
-    	description: 'Great place to visit!',
-    	name: 'Washington',
-    	pictures: [
-      		...getPhotosByDestination('Washington')
-    	]
-	},
-    id: nanoid(),
-    isFavorite: false,
-    offers: [0, 1],
-    type: 'taxi',
-};
 
 const getOffers = (offers) => {
 	let offersWrapper = '<div class="event__available-offers">';
@@ -51,7 +31,7 @@ const getImages = (pictures) => {
 };
 
 const createEditMenu = (state) => {
-  const { basePrice, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPhotos } = state;
+  const { basePrice, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPhotos, isDisabled, isSaving, isDeleting} = state;
   return (
     `<form class="event event--edit" action="#" method="post">
 	<header class="event__header">
@@ -60,7 +40,7 @@ const createEditMenu = (state) => {
 		  <span class="visually-hidden">Choose event type</span>
 		  <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
 		</label>
-		<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+		<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
 		<div class="event__type-list">
 		  <fieldset class="event__type-group">
@@ -127,7 +107,8 @@ const createEditMenu = (state) => {
 		<label class="event__label  event__type-output" for="event-destination-1">
 		${type.slice(0,1).toUpperCase() + type.slice(1)}
 		</label>
-		<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isDescription ? he.encode(destination.name) : ''}" list="destination-list-1">
+		<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isDescription ? he.encode(destination.name) : ''}"
+		${isDisabled ? 'disabled' : ''} list="destination-list-1">
 		<datalist id="destination-list-1">
 		  <option value="New York"></option>
 		  <option value="Washington"></option>
@@ -139,10 +120,12 @@ const createEditMenu = (state) => {
 
 	  <div class="event__field-group  event__field-group--time">
 		<label class="visually-hidden" for="event-start-time-1">From</label>
-		<input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${changeDateFormat(dateFrom)}">
+		<input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${changeDateFormat(dateFrom)}"
+		${isDisabled ? 'disabled' : ''}>
 		&mdash;
 		<label class="visually-hidden" for="event-end-time-1">To</label>
-		<input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${changeDateFormat(dateTo)}">
+		<input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${changeDateFormat(dateTo)}"
+		${isDisabled ? 'disabled' : ''}>
 	  </div>
 
 	  <div class="event__field-group  event__field-group--price">
@@ -153,9 +136,9 @@ const createEditMenu = (state) => {
 		<input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
 	  </div>
 
-	  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-	  <button class="event__reset-btn" type="reset">Delete</button>
-	  <button class="event__rollup-btn" type="button">
+	  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaving ? 'disabled': ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+	  <button class="event__reset-btn" type="reset" ${isDeleting || isDisabled ? 'disabled' : ''}>${isDeleting? 'Deleting...' : 'Delete'}</button>
+	  <button class="event__rollup-btn ${(isSaving || isDeleting || isDisabled) ? 'disabled' : ''}" type="button">
 		<span class="visually-hidden">Open event</span>
 	  </button>
 	</header>
@@ -169,9 +152,11 @@ const createEditMenu = (state) => {
 	  <section class="event__section  event__section--destination">
 	  	<h3 class="event__section-title  event__section-title--destination">Destination</h3>
 	  	<p class="event__destination-description">${isDescription? destination.description : ``}</p>
-	  	<div class="event__photos-tape">
-		  ${getImages(isPhotos ? destination.pictures : ``)}
-	  	</div>
+		<div class="event__photos-container">
+			<div class="event__photos-tape">
+				${getImages(isPhotos ? destination.pictures : ``)}
+			</div>
+		</div>
 	  </section>`: ''}
 	</section>
   </form>`
@@ -185,7 +170,7 @@ export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
 
-  constructor(point = BLANK_POINT, destinations, offers) {
+  constructor(point, destinations, offers) {
 	super();
 	this.#stateCopy = point;
     this._state = EditPointView.parsePointToState(point);
@@ -213,34 +198,7 @@ export default class EditPointView extends AbstractStatefulView {
 	}
   };
 
-  static parsePointToState = (point) => ({
-		...point,
-		isOffers: point.offers.length !== 0,
-		isDescription: point.destination !== null,
-		isPhotos: (point.destination ? point.destination.pictures.length !== 0 : false),
-  	});
-
-  static parseStateToPoint = (state) => {
-	const point = {...state};
-
-	if (!state.isOffers) {
-		point.offers = [];
-	}
-
-	if (!state.isDescription) {
-		point.destination = null;
-	}
-
-	if (!state.isPhotos) {
-		(point.destination ? point.destination.pictures = [] : point.destination = null);
-	}
-
-	delete point.isOffers;
-	delete point.isDescription;
-	delete point.isPhotos;
-
-	return point;
-  };
+  
 
   _restoreHandlers = () => {
 	this.#setInnerHandlers();
@@ -347,6 +305,7 @@ export default class EditPointView extends AbstractStatefulView {
 		{
 			destination: {
 				...this._state.destination,
+				id: this.#destinations.find((destination) => destination.name === evt.target.value).id,
 				description: this.#destinations.find((destination) => destination.name === evt.target.value).description,
 				name: evt.target.value, 
 				pictures: [...this.#destinations.find((destination) => destination.name === evt.target.value).pictures],
@@ -364,4 +323,39 @@ export default class EditPointView extends AbstractStatefulView {
 		});
 	}
   };
+
+  static parsePointToState = (point) => ({
+	...point,
+	isOffers: point.offers.length !== 0,
+	isDescription: point.destination !== null,
+	isPhotos: (point.destination ? point.destination.pictures.length !== 0 : false),
+	isDisabled: false,
+	isSaving: false,
+	isDeleting: false,
+  });
+
+static parseStateToPoint = (state) => {
+const point = {...state};
+
+if (!state.isOffers) {
+	point.offers = [];
+}
+
+if (!state.isDescription) {
+	point.destination = null;
+}
+
+if (!state.isPhotos) {
+	(point.destination ? point.destination.pictures = [] : point.destination = null);
+}
+
+delete point.isOffers;
+delete point.isDescription;
+delete point.isPhotos;
+delete point.isDisabled;
+delete point.isDeleting;
+delete point.isSaving;
+
+return point;
+};
 }
