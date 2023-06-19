@@ -5,9 +5,9 @@ import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 
 const getOffers = (offers) => {
-	let offersWrapper = '<div class="event__available-offers">';
-	  for (let i = 0; i < offers.length; i++) {
-		  offersWrapper += `
+  let offersWrapper = '<div class="event__available-offers">';
+  for (let i = 0; i < offers.length; i++) {
+    offersWrapper += `
 				  <div class="event__offer-selector">
 					  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offers[i].title.toLowerCase().split(' ').join('')}-${offers[i].id}"
 					   type="checkbox" name="event-offer-${offers[i].title.toLowerCase().split(' ').join('')}" checked>
@@ -17,17 +17,17 @@ const getOffers = (offers) => {
 						<span class="event__offer-price">${offers[i].price}</span>
 					  </label>
 				  </div>`;
-		}
-	offersWrapper += '</div>';
-	return offersWrapper;
+  }
+  offersWrapper += '</div>';
+  return offersWrapper;
 };
 
 const getImages = (pictures) => {
-	let imageMarkup = ``;
-	for (let i = 0; i < pictures.length; i++) {
-		imageMarkup += `<img class="event__photo" src="${pictures[i].src}" alt="Event photo">`
-	}
-	return imageMarkup;
+  let imageMarkup = '';
+  for (let i = 0; i < pictures.length; i++) {
+    imageMarkup += `<img class="event__photo" src="${pictures[i].src}" alt="Event photo">`;
+  }
+  return imageMarkup;
 };
 
 const createEditMenu = (state) => {
@@ -110,11 +110,33 @@ const createEditMenu = (state) => {
 		<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isDescription ? he.encode(destination.name) : ''}"
 		${isDisabled ? 'disabled' : ''} list="destination-list-1">
 		<datalist id="destination-list-1">
-		  <option value="New York"></option>
-		  <option value="Washington"></option>
-		  <option value="San Francisco"></option>
-		  <option value="Boston"></option>
-		  <option value="Los Angeles"></option>
+		  <option value="Chamonix"></option>
+		  <option value="Geneva"></option>
+		  <option value="Amsterdam"></option>
+		  <option value="Oslo"></option>
+		  <option value="Kopenhagen"></option>
+		  <option value="Den Haag"></option>
+		  <option value="Rotterdam"></option>
+		  <option value="Saint Petersburg"></option>
+		  <option value="Moscow"></option>
+		  <option value="Sochi"></option>
+		  <option value="Tokio"></option>
+		  <option value="Kioto"></option>
+		  <option value="Nagasaki"></option>
+		  <option value="Hiroshima"></option>
+		  <option value="Berlin"></option>
+		  <option value="Munich"></option>
+		  <option value="Frankfurt"></option>
+		  <option value="Vien"></option>
+		  <option value="Rome"></option>
+		  <option value="Naples"></option>
+		  <option value="Venice"></option>
+		  <option value="Milan"></option>
+		  <option value="Monaco"></option>
+		  <option value="Paris"></option>
+		  <option value="Barcelona"></option>
+		  <option value="Valencia"></option>
+		  <option value="Madrid"></option>
 		</datalist>
 	  </div>
 
@@ -151,10 +173,10 @@ const createEditMenu = (state) => {
 	  ${isDescription || isPhotos ? `
 	  <section class="event__section  event__section--destination">
 	  	<h3 class="event__section-title  event__section-title--destination">Destination</h3>
-	  	<p class="event__destination-description">${isDescription? destination.description : ``}</p>
+	  	<p class="event__destination-description">${isDescription? destination.description : ''}</p>
 		<div class="event__photos-container">
 			<div class="event__photos-tape">
-				${getImages(isPhotos ? destination.pictures : ``)}
+				${getImages(isPhotos ? destination.pictures : '')}
 			</div>
 		</div>
 	  </section>`: ''}
@@ -171,191 +193,192 @@ export default class EditPointView extends AbstractStatefulView {
   #offers = null;
 
   constructor(point, destinations, offers) {
-	super();
-	this.#stateCopy = point;
+    super();
+    this.#stateCopy = point;
     this._state = EditPointView.parsePointToState(point);
-	this.#destinations = destinations;
-	this.#offers = offers;
-	this.#setInnerHandlers();
-	this.#setDatePicker();
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#setInnerHandlers();
+    this.#setDatePicker();
   }
 
   get template() {
     return createEditMenu(this._state);
-  };
+  }
 
   removeElement = () => {
-	super.removeElement();
+    super.removeElement();
 
-	if (this.#dateFromPicker) {
-		this.#dateFromPicker.destroy();
-		this.#dateFromPicker = null;
-	}
+    if (this.#dateFromPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
+    }
 
-	if (this.#dateToPicker) {
-		this.#dateToPicker.destroy();
-		this.#dateToPicker = null;
-	}
+    if (this.#dateToPicker) {
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
   };
 
-  
-
   _restoreHandlers = () => {
-	this.#setInnerHandlers();
-	this.#setDatePicker();
-	this.setClickHandler(this._callback.rollUp);
-	this.setFormSubmitHandler(this._callback.saveCard);
-	this.setDeletePointHandler(this._callback.deleteCard);
+    this.#setInnerHandlers();
+    this.#setDatePicker();
+    this.setClickHandler(this._callback.rollUp);
+    this.setFormSubmitHandler(this._callback.saveCard);
+    this.setDeletePointHandler(this._callback.deleteCard);
   };
 
   setClickHandler = (callback) => {
-	this._callback.rollUp = callback;
-	this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpCard);
+    this._callback.rollUp = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpCard);
   };
 
   setFormSubmitHandler = (callback) => {
-	this._callback.saveCard = callback;
-	this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveForm);
+    this._callback.saveCard = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveForm);
   };
 
   setDeletePointHandler = (callback) => {
-	this._callback.deleteCard = callback;
-	this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteCard);
+    this._callback.deleteCard = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteCard);
   };
 
   #rollUpCard = (evt) => {
-	evt.preventDefault();
-	this._callback.rollUp(this.#stateCopy);
+    evt.preventDefault();
+    this._callback.rollUp(this.#stateCopy);
   };
 
   #saveForm = (evt) => {
-	evt.preventDefault();
-	this._callback.saveCard(EditPointView.parseStateToPoint(this._state));
+    evt.preventDefault();
+    this._callback.saveCard(EditPointView.parseStateToPoint(this._state));
   };
 
   #deleteCard = (evt) => {
-	evt.preventDefault();
-	this._callback.deleteCard(EditPointView.parseStateToPoint(this._state));
+    evt.preventDefault();
+    this._callback.deleteCard(EditPointView.parseStateToPoint(this._state));
   };
 
   #dateFromChangeHandler = ([newDateFrom]) => {
-	this.updateElement({
-		dateFrom: newDateFrom,
-	});
+    this.updateElement({
+      dateFrom: newDateFrom,
+    });
   };
 
   #dateToChangeHandler = ([newDateTo])=> {
-	this.updateElement({
-		dateTo: newDateTo,
-	});
+    this.updateElement({
+      dateTo: newDateTo,
+    });
   };
 
   #setDatePicker = () => {
-	if (this._state.dateFrom) {
-		this.#dateFromPicker = flatpickr(
-			this.element.querySelector('input[name=event-start-time]'),
-			{
-				dateFormat: 'd/m/y h:i',
-				defaultDate: this._state.dateFrom,
-				minDate: this._state.dateFrom,
-				maxDate: this._state.dateTo,
-				onChange: this.#dateFromChangeHandler,
-			}
-		);
-	}
+    if (this._state.dateFrom) {
+      this.#dateFromPicker = flatpickr(
+        this.element.querySelector('input[name=event-start-time]'),
+        {
+          dateFormat: 'd/m/y h:i',
+          defaultDate: this._state.dateFrom,
+          maxDate: this._state.dateTo,
+          onChange: this.#dateFromChangeHandler,
+        }
+      );
+    }
 
-	if (this._state.dateTo) {
-		this.#dateToPicker = flatpickr(
-			this.element.querySelector('input[name=event-end-time]'),
-			{
-				dateFormat: 'd/m/y h:i',
-				defaultDate: this._state.dateTo,
-				minDate: this._state.dateFrom,
-				onChange: this.#dateToChangeHandler,
-			}
-		);
-	}
+    if (this._state.dateTo) {
+      this.#dateToPicker = flatpickr(
+        this.element.querySelector('input[name=event-end-time]'),
+        {
+          dateFormat: 'd/m/y h:i',
+          defaultDate: this._state.dateTo,
+          minDate: this._state.dateFrom,
+          onChange: this.#dateToChangeHandler,
+        }
+      );
+    }
   };
 
   #setInnerHandlers = () => {
-	this.element.querySelector('.event__type-list').addEventListener('click', this.#swapTypeHandler);
-	this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationHandler)
-	this.element.querySelector('.event__input--price').addEventListener('input', this.#changePriceHandler);
+    this.element.querySelector('.event__type-list').addEventListener('click', this.#swapTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#changePriceHandler);
   };
 
   #swapTypeHandler = (evt) => {
-	evt.preventDefault();
-	if (evt.target.classList.contains('event__type-label')) {
-		this.updateElement({
-			isOffers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers.length !== 0,
-			offers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers,
-			type: evt.target.previousElementSibling.value,
-		});
-	}
+    evt.preventDefault();
+    if (evt.target.classList.contains('event__type-label')) {
+      this.updateElement({
+        isOffers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers.length !== 0,
+        offers: this.#offers.find((offer) => offer.type === evt.target.previousElementSibling.value).offers,
+        type: evt.target.previousElementSibling.value,
+      });
+    }
   };
 
   #changeDestinationHandler = (evt) => {
-	let isNewPhotos = false;
-	const isDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
-	if (isDestination !== undefined) {
-		isNewPhotos = this.#destinations.find((destination) => destination.name === evt.target.value).pictures.length !== 0;
-	}
-	if (isNewPhotos) {
-		this.updateElement(
-		{
-			destination: {
-				...this._state.destination,
-				id: this.#destinations.find((destination) => destination.name === evt.target.value).id,
-				description: this.#destinations.find((destination) => destination.name === evt.target.value).description,
-				name: evt.target.value, 
-				pictures: [...this.#destinations.find((destination) => destination.name === evt.target.value).pictures],
-			},
-			isDescription: true,
-			isPhotos: isNewPhotos,
-		});
-	}
+    let isNewPhotos = false;
+    const isDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
+    if (isDestination !== undefined) {
+      isNewPhotos = this.#destinations.find((destination) => destination.name === evt.target.value).pictures.length !== 0;
+    }
+    if (isNewPhotos) {
+      this.updateElement(
+        {
+          destination: {
+            ...this._state.destination,
+            id: this.#destinations.find((destination) => destination.name === evt.target.value).id,
+            description: this.#destinations.find((destination) => destination.name === evt.target.value).description,
+            name: evt.target.value,
+            pictures: [...this.#destinations.find((destination) => destination.name === evt.target.value).pictures],
+          },
+          isDescription: true,
+          isPhotos: isNewPhotos,
+        });
+    }
   };
 
   #changePriceHandler = (evt) => {
-	if (!isNaN(evt.target.value)){
-		this.updateElement ({
-			basePrice: evt.target.value,
-		});
-	}
+    if (!isNaN(evt.target.value)){
+      this.updateElement ({
+        basePrice: evt.target.value,
+      });
+    } else {
+      this.updateElement({
+        basePrice: this._state.basePrice
+      });
+    }
   };
 
   static parsePointToState = (point) => ({
-	...point,
-	isOffers: point.offers.length !== 0,
-	isDescription: point.destination !== null,
-	isPhotos: (point.destination ? point.destination.pictures.length !== 0 : false),
-	isDisabled: false,
-	isSaving: false,
-	isDeleting: false,
+    ...point,
+    isOffers: point.offers.length !== 0,
+    isDescription: point.destination !== null,
+    isPhotos: (point.destination ? point.destination.pictures.length !== 0 : false),
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
-static parseStateToPoint = (state) => {
-const point = {...state};
+  static parseStateToPoint = (state) => {
+    const point = {...state};
 
-if (!state.isOffers) {
-	point.offers = [];
-}
+    if (!state.isOffers) {
+      point.offers = [];
+    }
 
-if (!state.isDescription) {
-	point.destination = null;
-}
+    if (!state.isDescription) {
+      point.destination = null;
+    }
 
-if (!state.isPhotos) {
-	(point.destination ? point.destination.pictures = [] : point.destination = null);
-}
+    if (!state.isPhotos) {
+      point.destination.pictures = (point.destination ? point.destination.pictures : null);
+    }
 
-delete point.isOffers;
-delete point.isDescription;
-delete point.isPhotos;
-delete point.isDisabled;
-delete point.isDeleting;
-delete point.isSaving;
+    delete point.isOffers;
+    delete point.isDescription;
+    delete point.isPhotos;
+    delete point.isDisabled;
+    delete point.isDeleting;
+    delete point.isSaving;
 
-return point;
-};
+    return point;
+  };
 }
