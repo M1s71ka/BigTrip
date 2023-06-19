@@ -10,14 +10,14 @@ const getDatesDifference = (dateFrom, dateTo) => {
 
 const getSelectedOffers = (offers) => {
   let selectedOffersWrapper = '<ul class="event__selected-offers">';
-    for (let i = 0; i < offers.length; i++) {
-        selectedOffersWrapper +=
+  for (let i = 0; i < offers.length; i++) {
+    selectedOffersWrapper +=
 				`<li class="event__offer">
 					<span class="event__offer-title">${offers[i].title}</span>
 					&plus;&euro;&nbsp;
 					<span class="event__offer-price">${offers[i].price}</span>
 	  			</li>`;
-      }
+  }
   selectedOffersWrapper += '</ul>';
   return selectedOffersWrapper;
 };
@@ -64,30 +64,30 @@ export default class PointView extends AbstractView {
   #point = null;
 
   init(point) {
-	this.#point = point;
+    this.#point = point;
   }
 
   get template() {
     return createPathPoint(this.#point);
-  };
+  }
 
   setClickHandler = (callback) => {
-	this._callback.expand = callback;
+    this._callback.expand = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#expand);
   };
 
   setClickFavouriteHandler = (callback) => {
-	this._callback.favourite = callback;
-	this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#setFavourite);
+    this._callback.favourite = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#setFavourite);
   };
 
   #expand = (evt) => {
-	evt.preventDefault();
-	this._callback.expand();
+    evt.preventDefault();
+    this._callback.expand();
   };
 
   #setFavourite = (evt) => {
-	evt.preventDefault();
-	this._callback.favourite();
+    evt.preventDefault();
+    this._callback.favourite();
   };
 }

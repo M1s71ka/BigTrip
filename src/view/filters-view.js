@@ -1,8 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const createFiltersTemplate = (currentFilter) => {
-  return (
-    `<div class="trip-main__trip-controls  trip-controls">
+const createFiltersTemplate = (currentFilter) => (
+  `<div class="trip-main__trip-controls  trip-controls">
 		  <div class="trip-controls__navigation">
 			<h2 class="visually-hidden">Switch trip view</h2>
 			<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -36,15 +35,14 @@ const createFiltersTemplate = (currentFilter) => {
 			</form>
 		  </div>
 		</div>`
-  );
-};
+);
 
 export default class FiltersView extends AbstractView {
   #currentFilter = null;
 
   constructor(currentFilter) {
     super();
-	this.#currentFilter = currentFilter;
+    this.#currentFilter = currentFilter;
   }
 
   get template() {
@@ -52,12 +50,12 @@ export default class FiltersView extends AbstractView {
   }
 
   setFilterTypeChangeHandler(callback) {
-	this._callback.changeFilter = callback;
-	this.element.addEventListener('change', this.#changeFilter);
+    this._callback.changeFilter = callback;
+    this.element.addEventListener('change', this.#changeFilter);
   }
 
   #changeFilter = (evt) => {
-	evt.preventDefault();
-	this._callback.changeFilter(evt.target.value);
+    evt.preventDefault();
+    this._callback.changeFilter(evt.target.value);
   }
 }

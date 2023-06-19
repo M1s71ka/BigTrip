@@ -1,15 +1,15 @@
-import Observable from "../framework/observable";
-import { FilterType } from "../constants";
+import Observable from '../framework/observable';
+import { FilterType } from '../constants';
 
 export default class FilterModel extends Observable {
-	#filter = FilterType.EVERYTHING;
+  #filter = FilterType.EVERYTHING;
 
-	get filter() {
-		return this.#filter;
-	}
+  get filter() {
+    return this.#filter;
+  }
 
-	setFilter = (updateType, filter) => {
-		this.#filter = filter;
-		this._notify(updateType, filter);
-	}
+  setFilter = (updateType, filter) => {
+    this.#filter = filter;
+    this._notify(updateType, filter);
+  }
 }

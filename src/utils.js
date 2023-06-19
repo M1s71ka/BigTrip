@@ -3,7 +3,8 @@ import { FilterType } from './constants';
 
 const isPointFuture = (point) => dayjs(point.dateFrom).diff(dayjs(new Date)) > 0;
 
-const isPointPast = (point) => dayjs(point.dateTo).diff(new Date()) < 0;
+const isPointPast = (point) => dayjs(point.dateTo).diff(new Date()) < 0 || (dayjs(point.dateFrom).diff(new Date()) < 0 &&
+ dayjs(point.dateTo).diff(new Date()) > 0);
 
 const filter = {
   [FilterType.EVERYTHING]: (points) => points,
